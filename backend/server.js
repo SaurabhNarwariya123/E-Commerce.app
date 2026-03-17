@@ -24,6 +24,7 @@ app.use(express.json())
 const allowedOrigins = [
     process.env.CORS_ORIGIN,
     'https://e-commerce-app-dun-beta.vercel.app',
+    "http://localhost:4000",
 ].filter(Boolean)
 
 const corsOptions = {
@@ -40,7 +41,7 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
-app.options('*', cors(corsOptions))
+app.options(/.*/, cors(corsOptions))
 
 // api endpoints
 app.use('/api/user',userRouter)
