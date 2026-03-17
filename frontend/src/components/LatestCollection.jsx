@@ -13,7 +13,7 @@ const LatestCollection = () => {
     if (products && products.length > 0) { 
       setLatestProducts(products.slice(0, 10));
     }
-  }, [products]); // ✅ Only runs when `products` changes
+  }, [products]); 
 
 
   return (
