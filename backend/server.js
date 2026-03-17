@@ -1,6 +1,6 @@
 import dns from 'node:dns/promises'
 import express from 'express'
-import cors from 'cors' 
+import cors from 'cors'
 import dotenv from 'dotenv'
 dotenv.config();
 dns.setServers(['1.1.1.1', '8.8.8.8']);
@@ -13,7 +13,6 @@ import orderRouter from './routes/orderRoute.js';
 
 
 // App config
-dotenv.config();
 const app = express()
 const port = process.env.PORT || 4000
 connectCloudinary()
@@ -21,7 +20,27 @@ connectDB();
 
 //  middle wares
 app.use(express.json())
-app.use(cors())
+
+const allowedOrigins = [
+    process.env.CORS_ORIGIN,
+    'https://e-commerce-app-dun-beta.vercel.app',
+].filter(Boolean)
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true)
+        if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+            return callback(null, true)
+        }
+        return callback(new Error('Not allowed by CORS'))
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+}
+
+app.use(cors(corsOptions))
+app.options('*', cors(corsOptions))
 
 // api endpoints
 app.use('/api/user',userRouter)
@@ -33,4 +52,8 @@ app.get('/',(req,res)=>{
     res.send("API Working")
 })
 
-app.listen(port,()=> console.log('server started on PORT : ' + port))
+if (process.env.VERCEL !== '1') {
+    app.listen(port, () => console.log('server started on PORT : ' + port))
+}
+
+export default app
