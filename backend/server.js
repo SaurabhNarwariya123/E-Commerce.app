@@ -23,8 +23,10 @@ app.use(express.json())
 
 const allowedOrigins = [
     process.env.CORS_ORIGIN,
+    process.env.ADMIN_CORS_ORIGIN,
     'https://e-commerce-app-dun-beta.vercel.app',
     "http://localhost:4000",
+    "http://localhost:5173",
 ].filter(Boolean)
 
 const corsOptions = {
