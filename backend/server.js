@@ -27,6 +27,7 @@ const allowedOrigins = [
     'https://e-commerce-app-dun-beta.vercel.app',
     'https://e-commerce-app-admin-rust.vercel.app',
     "http://localhost:4000",
+    "http://localhost:5174",
     "http://localhost:5173",
 ].filter(Boolean)
 
@@ -40,7 +41,7 @@ const corsOptions = {
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'token'],
 }
 
 app.use(cors(corsOptions))
