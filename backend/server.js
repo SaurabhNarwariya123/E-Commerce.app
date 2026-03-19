@@ -25,6 +25,7 @@ const allowedOrigins = [
     process.env.CORS_ORIGIN,
     process.env.ADMIN_CORS_ORIGIN,
     'https://e-commerce-app-self-ten.vercel.app',
+    "https://e-commerce-app-366q.vercel.app"
     "http://localhost:4000",
     "http://localhost:5174",
     "http://localhost:5173",
