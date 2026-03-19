@@ -13,8 +13,37 @@ const ShopContextProvider = (props) => {
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
-  const [token,setToken] = useState("");
+  const [token, setToken] = useState("");
   const navigate = useNavigate();
+
+  // Helper function to get authorization headers
+  const getAuthHeaders = (customToken = null) => {
+    const tokenToUse = customToken || token;
+    if (!tokenToUse) return {};
+    
+    return {
+      Authorization: `Bearer ${tokenToUse}`,
+      token: tokenToUse // Backward compatibility
+    };
+  };
+
+  // Handle authentication errors
+  const handleAuthError = (error) => {
+    const errorMessage = error.response?.data?.message || error.message;
+    const errorCode = error.response?.data?.code;
+
+    if (errorCode === 'TOKEN_EXPIRED' || errorMessage?.includes('expired')) {
+      localStorage.removeItem('token');
+      setToken('');
+      toast.error('Session expired. Please login again');
+      navigate('/login');
+    } else if (errorCode === 'INVALID_TOKEN' || errorMessage?.includes('invalid') || errorMessage?.includes('authorized') || errorMessage?.includes('No token')) {
+      localStorage.removeItem('token');
+      setToken('');
+      toast.error('Please login to continue');
+      navigate('/login');
+    }
+  };
 
 //   //   -------------------------------------add TO cart-------------------
 
@@ -35,15 +64,16 @@ const ShopContextProvider = (props) => {
     setCartItems(cartData);
    
    if (token) {
-  try { 
-     await axios.post(backendUrl + "/api/cart/add", { itemId, size }, {
-       headers: { token }
-     });
-  } catch (error) {
-    console.log(error);
-    toast.error(error.message);
-  }
-}
+      try { 
+        await axios.post(backendUrl + "/api/cart/add", { itemId, size }, {
+          headers: getAuthHeaders()
+        });
+      } catch (error) {
+        console.log(error);
+        handleAuthError(error);
+        toast.error(error.response?.data?.message || error.message);
+      }
+    }
   }
 
 
@@ -73,11 +103,13 @@ const ShopContextProvider = (props) => {
 
     if (token) {
       try {
-        await axios.post(backendUrl + "/api/cart/update",{ itemId, size, quantity }, {headers: { token }});
+        await axios.post(backendUrl + "/api/cart/update", { itemId, size, quantity }, {
+          headers: getAuthHeaders()
+        });
       } catch (error) {
-
         console.log(error);
-        toast.error(error.message)
+        handleAuthError(error);
+        toast.error(error.response?.data?.message || error.message);
       }
     }
   };
@@ -116,29 +148,36 @@ const ShopContextProvider = (props) => {
     }
   }
 
-  const getUserCart = async (token ) =>{
-      
-       try {
-          const response = await axios.post(backendUrl + '/api/cart/get' ,{} ,{headers : {token}})
-        if(response.data.success){
-          setCartItems(response.data.cartData)
-        }
-   } catch (error) {
-           console.log(error);
-      toast.error(error.message);
-   }
+  const getUserCart = async (customToken = null) => {
+    try {
+      const response = await axios.post(
+        backendUrl + '/api/cart/get',
+        {},
+        { headers: getAuthHeaders(customToken) }
+      );
+
+      if (response.data.success) {
+        setCartItems(response.data.cartData);
+      } else {
+        handleAuthError({ response: { data: response.data } });
+      }
+    } catch (error) {
+      console.log(error);
+      handleAuthError(error);
+    }
   }
     
 
 
   useEffect(() => {
     getProductData();
-  });
+  }, []);
 
   useEffect(() => {
     if (!token && localStorage.getItem("token")) {
-      setToken(localStorage.getItem("token"));
-       getUserCart(localStorage.getItem("token"))
+      const storedToken = localStorage.getItem("token");
+      setToken(storedToken);
+      getUserCart(storedToken);
     }
   }, []);
 
