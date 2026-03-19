@@ -9,15 +9,15 @@ import Login from "./components/Login";
 import { ToastContainer} from 'react-toastify';
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
- export const currency = '$';
+export const currency = '$';
 
 
-const App = () => {
+const AdminApp = () => {
 
- const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '' );
+ const [token, setToken] = useState(localStorage.getItem('admin_token') ? localStorage.getItem('admin_token') : '' );
 
   useEffect(()=>{
-      localStorage.setItem('token',token)
+      localStorage.setItem('admin_token',token)
   },[token])
 
   return (
@@ -34,9 +34,9 @@ const App = () => {
             <Sidebar />
             <div className="w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base">
               <Routes>
-                <Route path="/add" element={<Add token={token}/>} />
-                <Route path="/list" element={<List token={token}/>} />
-                <Route path="/orders" element={<Orders token = {token}/>} />
+                <Route path="add" element={<Add token={token}/>} />
+                <Route path="list" element={<List token={token}/>} />
+                <Route path="orders" element={<Orders token = {token}/>} />
               </Routes>
             </div>
           </div>
@@ -46,4 +46,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default AdminApp;
