@@ -15,6 +15,7 @@ import SearchBar from './components/SearchBar'
 import { ToastContainer, toast } from 'react-toastify'; 
 import Verify from './pages/Verify'
 import AdminApp from './admin/App'
+import ProtectedRoute from './components/ProtectedRoute'
 
 const App = () => {
   return (
@@ -35,7 +36,7 @@ const App = () => {
              <Route path='/product/:productId' element = {<Product/>}/>
              <Route path='/cart' element = {<Cart/>}/>
              <Route path='/login' element = {<Login/>}/>
-             <Route path='/place-order' element = {<PlaceOrder/>}/>
+             <Route path='/place-order' element = {<ProtectedRoute element={<PlaceOrder/>}/>}/>
              <Route path='/orders' element = {<Order/>}/> 
              <Route path='/verify' element = {<Verify/>}/> 
             </Routes>  

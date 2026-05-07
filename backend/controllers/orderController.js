@@ -71,9 +71,11 @@ dotenv.config();
 
         console.log("✅ Order saved successfully");
 
+        
+
         await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
-        res.json({ success: true, message: "Order Placed" });
+        res.json({ success: true, message: "Order Placed", orderId: newOrder._id });
 
     } catch (error) {
         console.log("❌ Error placing order:", error);
@@ -147,6 +149,9 @@ const placeOrderStripe = async (req, res) =>{
       try {
         if(success === 'true') {
              await orderModel.findByIdAndUpdate(orderId,{payment:true});
+             
+             // Fetch order to get phone number for SMS
+             const order = await orderModel.findById(orderId)
              await orderModel.findByIdAndUpdate(userId,{cartData:{}});
              res.json({success:true});
         }
@@ -212,6 +217,28 @@ const placeOrderRazorpay = async (req, res) =>{
          const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id)
           if(orderInfo.status === 'paid'){
              await orderModel.findByIdAndUpdate(orderInfo.receipt,{payment:true});
+             
+             // Fetch order to get phone number for SMS
+             const order = await orderModel.findById(orderInfo.receipt)
+             
+             // Send SMS notification
+             if (order && order.address && order.address.phone) {
+                 const formattedPhone = formatPhoneNumber(order.address.phone)
+                 const orderConfirmationMessage = createOrderConfirmationMessage({
+                     orderId: order._id,
+                     amount: order.amount,
+                     items: order.items,
+                     address: order.address
+                 })
+                 
+                 sendOrderConfirmationSMS(formattedPhone, orderConfirmationMessage, {
+                     orderId: order._id,
+                     amount: order.amount
+                 }).catch(error => {
+                     logger.warn(`Failed to send SMS for order ${order._id}`)
+                 })
+             }
+             
              await userModel.findByIdAndUpdate(userId,{cartData:{}})
              res.json({success:true, message:'Payment Successful'})
           }
