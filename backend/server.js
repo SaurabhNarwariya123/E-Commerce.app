@@ -1,4 +1,6 @@
 import dns from 'node:dns/promises'
+import { createServer } from 'http'
+import { Server as SocketIOServer } from 'socket.io'
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
@@ -10,7 +12,10 @@ import userRouter from './routes/userRoute.js';
 import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
-
+import aiChatRouter from './routes/aiChat.routes.js';
+import stockRouter from './routes/stockRoute.js';
+import deliveryRouter from './routes/deliveryRoute.js';
+import { validateAIConfig } from './config/ai.js';
 
 // App config
 const app = express()
@@ -18,7 +23,15 @@ const port = process.env.PORT || 4000
 connectCloudinary()
 connectDB();
 
-//  middle wares
+// Initialize AI Config
+try {
+    validateAIConfig();
+    console.log('AI Chatbot configured successfully');
+} catch (error) {
+    console.warn('AI Chatbot not configured:', error.message);
+}
+
+// Middlewares
 app.use(express.json())
 
 const allowedOrigins = [
@@ -47,18 +60,69 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.options(/.*/, cors(corsOptions))
 
-// api endpoints
-app.use('/api/user',userRouter)
-app.use('/api/product',productRouter)
-app.use('/api/cart',cartRouter)
-app.use('/api/order',orderRouter)
+// Create HTTP server + Socket.io (disabled on Vercel serverless)
+const httpServer = createServer(app)
 
-app.get('/',(req,res)=>{
+let io = null
+if (process.env.VERCEL !== '1') {
+    io = new SocketIOServer(httpServer, {
+        cors: {
+            origin: allowedOrigins,
+            credentials: true,
+            methods: ['GET', 'POST']
+        }
+    })
+
+    io.on('connection', (socket) => {
+        // Admin joins admin room to receive all delivery updates
+        socket.on('admin:join', () => {
+            socket.join('admin-room')
+        })
+
+        // Delivery person announces their presence
+        socket.on('delivery:join', ({ deliveryPersonId }) => {
+            socket.join(`delivery:${deliveryPersonId}`)
+            socket.deliveryPersonId = deliveryPersonId
+        })
+
+        // Customer/admin tracks a specific order
+        socket.on('order:track', ({ orderId }) => {
+            socket.join(`order:${orderId}`)
+        })
+
+        // Delivery person sends live location (alternative to REST)
+        socket.on('delivery:location', async ({ deliveryPersonId, lat, lng }) => {
+            io.to('admin-room').emit('delivery-location-update', { deliveryPersonId, lat, lng })
+            // Will also notify relevant order rooms (handled in controller for REST)
+        })
+
+        socket.on('disconnect', () => {})
+    })
+
+    console.log('Socket.io initialized')
+}
+
+// Attach io to every request so controllers can emit events
+app.use((req, _res, next) => {
+    req.io = io
+    next()
+})
+
+// API endpoints
+app.use('/api/user',     userRouter)
+app.use('/api/product',  productRouter)
+app.use('/api/cart',     cartRouter)
+app.use('/api/order',    orderRouter)
+app.use('/api/ai',       aiChatRouter)
+app.use('/api/stock',    stockRouter)
+app.use('/api/delivery', deliveryRouter)
+
+app.get('/', (_req, res) => {
     res.send("API Working")
 })
 
 if (process.env.VERCEL !== '1') {
-    app.listen(port, () => console.log('server started on PORT : ' + port))
+    httpServer.listen(port, () => console.log('Server started on PORT: ' + port))
 }
 
 export default app

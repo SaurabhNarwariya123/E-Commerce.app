@@ -8,12 +8,16 @@ export const ShopContext = createContext();
 const ShopContextProvider = (props) => {
   const currency = "$";
   const delivery_fee = 10;
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [showCartSidebar, setShowCartSidebar] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
+  const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const navigate = useNavigate();
 
   // Helper function to get authorization headers
@@ -62,8 +66,9 @@ const ShopContextProvider = (props) => {
     }
 
     setCartItems(cartData);
-   
-   if (token) {
+    setShowCartSidebar(true);
+
+    if (token) {
       try { 
         await axios.post(backendUrl + "/api/cart/add", { itemId, size }, {
           headers: getAuthHeaders()
@@ -179,13 +184,31 @@ const ShopContextProvider = (props) => {
       setToken(storedToken);
       getUserCart(storedToken);
     }
+    
+    // Initialize userId from localStorage
+    if (!userId && localStorage.getItem("userId")) {
+      const storedUserId = localStorage.getItem("userId");
+      setUserId(storedUserId);
+    }
+
+    // Initialize userName from localStorage
+    if (!userName && localStorage.getItem("userName")) {
+      const storedUserName = localStorage.getItem("userName");
+      setUserName(storedUserName);
+    }
+
+    // Initialize userEmail from localStorage
+    if (!userEmail && localStorage.getItem("userEmail")) {
+      const storedUserEmail = localStorage.getItem("userEmail");
+      setUserEmail(storedUserEmail);
+    }
   }, []);
 
   const value = {
     products, currency,delivery_fee,search,
-    setSearch,showSearch,setShowSearch,cartItems,
+    setSearch,showSearch,setShowSearch,showCartSidebar,setShowCartSidebar,cartItems,
     addToCart,setCartItems,getCartCount,updateQuantity,getCartAmount,
-    navigate,backendUrl,setToken,token,
+    navigate,backendUrl,setToken,token,userId,setUserId,userName,setUserName,userEmail,setUserEmail,
   };
 
   return ( 

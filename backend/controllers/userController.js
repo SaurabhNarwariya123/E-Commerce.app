@@ -40,7 +40,7 @@ const loginUser = async(req, res) => {
 
             // Create token
             const token = createToken(user._id);
-            res.json({ success: true, token });
+            res.json({ success: true, token, userId: user._id, name: user.name, email: user.email });
 
       } catch (error) {
             console.error("Login error:", error);
@@ -88,7 +88,7 @@ const registerUser = async (req, res) => {
             const user = await newUser.save();
             const token = createToken(user._id);
 
-            res.json({ success: true, token });
+            res.json({ success: true, token, userId: user._id, name: user.name, email: user.email });
 
       } catch (error) {
             console.error("Register error:", error);
@@ -121,4 +121,129 @@ const adminLogin = async (req, res) => {
       }
 }
 
-export { loginUser, registerUser, adminLogin}
+// export { loginUser, registerUser, adminLogin}
+
+// ============= GOOGLE AUTH (SIGN IN / REGISTER) =============
+const googleAuth = async (req, res) => {
+      try {
+            const { name, email } = req.body;
+
+            if (!email || !name) {
+                  return res.json({ success: false, message: "Name and email are required" });
+            }
+
+            const user = await userModel.findOne({ email });
+
+            if (!user) {
+                  return res.json({ success: false, message: 'User not found. Please sign up first.' });
+            }
+
+            const token = createToken(user._id);
+            return res.json({ success: true, token, userId: user._id, name: user.name, email: user.email, name: user.name, email: user.email });
+
+      } catch (error) {
+            console.error("Google auth error:", error);
+            return res.json({ success: false, message: error.message });
+      }
+}
+
+// ============= GET PROFILE =============
+const getProfile = async (req, res) => {
+    try {
+        // req.user.id is set by authUser middleware (works for GET — no body needed)
+        const userId = req.user?.id || req.body?.userId
+        if (!userId) return res.status(401).json({ success: false, message: 'Unauthorized' })
+        const user = await userModel.findById(userId).select('name email')
+        if (!user) return res.json({ success: false, message: 'User not found' })
+        res.json({ success: true, name: user.name, email: user.email })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// ─── Get saved addresses ──────────────────────────────────────────────────────
+const getAddresses = async (req, res) => {
+    try {
+        const userId = req.user?.id || req.body?.userId
+        if (!userId) return res.json({ success: false, message: 'Unauthorized' })
+        const user = await userModel.findById(userId).select('addresses')
+        if (!user) return res.json({ success: false, message: 'User not found' })
+        res.json({ success: true, addresses: user.addresses || [] })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// ─── Add a new address ────────────────────────────────────────────────────────
+const addAddress = async (req, res) => {
+    try {
+        const userId = req.user?.id || req.body?.userId
+        if (!userId) return res.json({ success: false, message: 'Unauthorized' })
+        const { address } = req.body
+        if (!address?.street || !address?.city) {
+            return res.json({ success: false, message: 'Street and city are required' })
+        }
+        const user = await userModel.findByIdAndUpdate(
+            userId,
+            { $push: { addresses: address } },
+            { new: true }
+        ).select('addresses')
+        if (!user) return res.json({ success: false, message: 'User not found' })
+        res.json({ success: true, addresses: user.addresses || [] })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// ─── Update an existing address ──────────────────────────────────────────────
+const updateAddress = async (req, res) => {
+    try {
+        const userId = req.user?.id || req.body?.userId
+        if (!userId) return res.json({ success: false, message: 'Unauthorized' })
+        const { addressId, address } = req.body
+        if (!address?.street || !address?.city) {
+            return res.json({ success: false, message: 'Street and city are required' })
+        }
+        const user = await userModel.findOneAndUpdate(
+            { _id: userId, 'addresses._id': addressId },
+            {
+                $set: {
+                    'addresses.$.label':     address.label     || 'Home',
+                    'addresses.$.firstName': address.firstName || '',
+                    'addresses.$.lastName':  address.lastName  || '',
+                    'addresses.$.street':    address.street,
+                    'addresses.$.city':      address.city,
+                    'addresses.$.state':     address.state     || '',
+                    'addresses.$.zipcode':   address.zipcode   || '',
+                    'addresses.$.country':   address.country   || '',
+                    'addresses.$.phone':     address.phone     || '',
+                }
+            },
+            { new: true }
+        ).select('addresses')
+        if (!user) return res.json({ success: false, message: 'Address not found' })
+        res.json({ success: true, addresses: user.addresses || [] })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// ─── Delete an address ────────────────────────────────────────────────────────
+const deleteAddress = async (req, res) => {
+    try {
+        const userId = req.user?.id || req.body?.userId
+        if (!userId) return res.json({ success: false, message: 'Unauthorized' })
+        const { addressId } = req.body
+        const user = await userModel.findByIdAndUpdate(
+            userId,
+            { $pull: { addresses: { _id: addressId } } },
+            { new: true }
+        ).select('addresses')
+        if (!user) return res.json({ success: false, message: 'User not found' })
+        res.json({ success: true, addresses: user.addresses || [] })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export { loginUser, registerUser, adminLogin, googleAuth, getProfile, getAddresses, addAddress, updateAddress, deleteAddress }

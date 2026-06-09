@@ -1,15 +1,13 @@
-
 import userModel from "../models/userModel.js";
 
-
-// Add product to user cart
 const addToCart = async (req, res) => {
   try {
     const { userId, itemId, size } = req.body;
     const userData = await userModel.findById(userId);
-    let cartData =  await userData.cartData || {}
+    if (!userData) return res.json({ success: false, message: 'User not found' });
 
-    // Add item to cart logic
+    let cartData = userData.cartData || {};
+
     if (cartData[itemId]) {
       if (cartData[itemId][size]) {
         cartData[itemId][size] += 1;
@@ -20,93 +18,49 @@ const addToCart = async (req, res) => {
       cartData[itemId] = {};
       cartData[itemId][size] = 1;
     }
-     await userModel.findByIdAndUpdate(userId, { cartData });
-    res.json({ success: true,message: "Added To Cart"});
 
-  } catch (error) {
-    console.log( error);
-    res.json({success: false, message: error.message });
-  }
-};
-
-//  Update user Cart
-// const updateCart = async (req,res) =>{
-
-//      try {
-//          const {userId , itemId,size,quantity} = req.body
-//          const userData = await userModel.findById(userId)
-//           let cartData = await userData.cartData;
-//            cartData[itemId][size] = quantity
-//         await userModel.findByIdAndUpdate(userId, {cartData})
-//          res.json({success: true , message : "Cart Update " })
-//      } catch (error) {
-//         console.log(error)
-//         res.json({success: false , message : error.message})
-//      }
-    
-// }
-
-
-
-
-const updateCart = async (req, res) => {
-  try {
-    const { userId, itemId, size, quantity } = req.body;
-
-    // 1. Try Redis first
-    let cartData = await client.get(`cart:${userId}`);
-
-    if (cartData) {
-      cartData = JSON.parse(cartData);
-    } else {
-      const userData = await userModel.findById(userId);
-      cartData = userData.cartData || {};
-    }
-
-    // 2. Safe update
-    if (!cartData[itemId]) {
-      cartData[itemId] = {};
-    }
-
-    cartData[itemId][size] = quantity;
-
-    // 3. Update DB
     await userModel.findByIdAndUpdate(userId, { cartData });
-
-    // 4. Update Redis cache
-    await client.set(`cart:${userId}`, JSON.stringify(cartData), {
-      EX: 60
-    });
-
-    res.json({ success: true, message: "Cart Updated" });
+    res.json({ success: true, message: "Added To Cart" });
 
   } catch (error) {
+    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-export default updateCart;
+const updateCart = async (req, res) => {
+  try {
+    const { userId, itemId, size, quantity } = req.body;
+    const userData = await userModel.findById(userId);
+    if (!userData) return res.json({ success: false, message: 'User not found' });
 
+    let cartData = userData.cartData || {};
 
+    if (!cartData[itemId]) cartData[itemId] = {};
+    cartData[itemId][size] = quantity;
 
-//   get User cart data
-const getUserCart = async (req,res) =>{
+    await userModel.findByIdAndUpdate(userId, { cartData });
+    res.json({ success: true, message: "Cart Updated" });
 
-    try {
-        const{userId} = req.body
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
 
-        const userData = await userModel.findById(userId)
-        let cartData = await userData.cartData;
+const getUserCart = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const userData = await userModel.findById(userId);
+    if (!userData) return res.json({ success: false, message: 'User not found' });
 
-        res.json({success:true, cartData})
+    const cartData = userData.cartData || {};
+    res.json({ success: true, cartData });
 
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
 
-    } catch (error) {
-         console.log(error)
-          res.json({success: false , message : error.message})
-
-    }
-    
-}
-
-export  { addToCart,getUserCart, updateCart}
+export { addToCart, getUserCart, updateCart };

@@ -1,21 +1,35 @@
 import jwt from 'jsonwebtoken'
 
-const adminAuth = async(req,res,next)=>{
-     try {
-         const {token} = req.headers
-         if(!token){
-            return res.json({success:false,message:"Not Authorized Login Again"})
-         }
+const adminAuth = async (req, res, next) => {
+    try {
+        // Accept `token` header or `Authorization: Bearer <token>`
+        let token = req.headers.token;
+        if (!token && req.headers.authorization) {
+            const auth = req.headers.authorization;
+            if (auth.startsWith('Bearer ')) token = auth.slice(7);
+        }
 
-         const token_decode = jwt.verify(token,process.env.JWT_SECRET);
-         if(token_decode !== process.env.ADMIN_EMAIL+ process.env.ADMIN_PASSWORD){
-             return res.json({success:false,message:"Not Authorized Login Again"})
-         }
-         next()
-     } catch (error) {
-        console.log(error);
-        res.json({success:false,message:error.message})
-     }
+        if (!token) {
+            return res.status(401).json({ success: false, message: "Not Authorized Login Again" });
+        }
+
+        if (!process.env.JWT_SECRET || !process.env.ADMIN_EMAIL) {
+            console.error('ADMIN_EMAIL or JWT_SECRET not configured');
+            return res.status(500).json({ success: false, message: 'Server configuration error' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // `createToken` sets `{ id }` — for admin we used email as id
+        if (!decoded || decoded.id !== process.env.ADMIN_EMAIL) {
+            return res.status(401).json({ success: false, message: "Not Authorized Login Again" });
+        }
+
+        next();
+    } catch (error) {
+        console.error('Admin auth error:', error);
+        return res.status(401).json({ success: false, message: "Not Authorized Login Again" });
+    }
 }
 
 export default adminAuth

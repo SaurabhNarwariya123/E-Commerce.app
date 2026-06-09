@@ -62,16 +62,51 @@ const Product = () => {
            <p className='mt-5 text-3xl font-medium'> {currency} {productData.price}</p>
            <p className='mt-5 text-gray-500 md:w-4/5 '>{productData.description}</p>
            <div className='flex flex-col gap-4 my-8'>
-            <p>Select Size</p>
-            <div className='flex gap-2'>
-              {productData.sizes.map((item,index) =>(
-                <button onClick= {() =>setSize(item)} className={`border py-2 bg-gray-100 ${item === size ? 'border-orange-500 ' : '' }`} key = {index}>{item}</button>
-              ))}
-
+            <p className='font-medium text-sm text-gray-700'>Select Size</p>
+            <div className='flex flex-wrap gap-2'>
+              {productData.sizes.map((item, index) => {
+                const stockQty = productData.stock ? (productData.stock[item] ?? productData.stock.get?.(item) ?? null) : null
+                const outOfStock = stockQty !== null && stockQty === 0
+                const lowStock = stockQty !== null && stockQty > 0 && stockQty <= 5
+                return (
+                  <button
+                    key={index}
+                    disabled={outOfStock}
+                    onClick={() => !outOfStock && setSize(item)}
+                    className={`relative min-w-[44px] px-3 py-2 text-sm font-medium rounded-lg border-2 transition-all duration-150
+                      ${outOfStock ? 'bg-gray-100 text-gray-300 border-gray-200 cursor-not-allowed line-through' :
+                        item === size ? 'border-orange-500 bg-orange-50 text-orange-600' :
+                        'border-gray-300 bg-white text-gray-700 hover:border-gray-500 cursor-pointer'}`}
+                  >
+                    {item}
+                    {lowStock && !outOfStock && (
+                      <span className='absolute -top-2 -right-2 text-[9px] bg-orange-500 text-white rounded-full px-1 py-0.5 leading-none'>
+                        {stockQty}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
+            {/* Stock hint */}
+            {size && (() => {
+              const qty = productData.stock ? (productData.stock[size] ?? productData.stock.get?.(size) ?? null) : null
+              if (qty === null) return null
+              if (qty === 0) return <p className='text-xs text-red-500'>Out of stock for size {size}</p>
+              if (qty <= 5) return <p className='text-xs text-orange-500'>Only {qty} left in size {size}!</p>
+              return <p className='text-xs text-green-600'>In stock ({qty} available)</p>
+            })()}
            </div>
 
-           <button onClick={()=>addToCart(productData._id,size)} className='bg-black text-white px-8 py-3 text-sm  active:bg-gray-700'>ADD TO CART</button>
+           <button
+             onClick={() => {
+               if (!size) { alert('Please select a size'); return; }
+               addToCart(productData._id, size)
+             }}
+             className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700 hover:bg-gray-900 transition-colors rounded'
+           >
+             ADD TO CART
+           </button>
             <hr className='mt-8 sm:w-4/5'/>
             <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1'>
               <p>100% Original Product </p>

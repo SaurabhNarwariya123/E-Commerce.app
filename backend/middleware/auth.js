@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
  * 
  * Or custom header (for backward compatibility):
  * token: <token>
- */
+ */ 
 const authUser = async (req, res, next) => {
     try {
         // Get token from Authorization header or custom header
@@ -48,8 +48,8 @@ const authUser = async (req, res, next) => {
         // Verify token
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.body.userId = decoded.id;
-            req.user = decoded; // Add full decoded token to request
+            if (req.body) req.body.userId = decoded.id;  // safe for GET (no body)
+            req.user = decoded;
             next();
         } catch (jwtError) {
             // Handle specific JWT errors

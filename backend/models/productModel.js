@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema({
     sizes:{type:Array , required: true},
     bestseller:{type: Boolean },
     date:{type:Number , required: true},
-
+    stock:{type: Map, of: Number, default: {}},
 
 })
 
