@@ -1,6 +1,5 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { ShopContext } from './context/ShopContext'
 import Home from './pages/Home'
 import About from './pages/About'
 import Contact from './pages/Contact'
@@ -16,7 +15,7 @@ import Footer from './components/Footer'
 import SearchBar from './components/SearchBar'
 // import AIChat from './components/AIChat'
 import CartSidebar from './components/CartSidebar'
-import { ToastContainer, toast } from 'react-toastify'; 
+import { ToastContainer } from 'react-toastify';
 import Verify from './pages/Verify'
 import AdminApp from './admin/App'
 import ProtectedRoute from './components/ProtectedRoute'
