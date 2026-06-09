@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { signInWithPopup } from 'firebase/auth';
+import { signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { auth, provider } from '../firebase';
 
 const Login = () => {
@@ -75,48 +75,38 @@ const Login = () => {
          }
   }
 
-const handleGoogleSignIn = async () => {
+const handleGoogleRedirectResult = async () => {
   try {
-
-    const result = await signInWithPopup(auth, provider);
+    const result = await getRedirectResult(auth);
+    if (!result) return;
 
     const user = result.user;
-
-    const response = await axios.post(
-      backendUrl + '/api/user/google',
-      {
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL
-      }
-    );
+    const response = await axios.post(backendUrl + '/api/user/google', {
+      name: user.displayName,
+      email: user.email,
+      photo: user.photoURL
+    });
 
     if (response.data.success) {
       setToken(response.data.token);
       localStorage.setItem('token', response.data.token);
-      if (response.data.userId) {
-        setUserId(response.data.userId);
-        localStorage.setItem('userId', response.data.userId);
-      }
-      if (response.data.name) {
-        setUserName(response.data.name);
-        localStorage.setItem('userName', response.data.name);
-      }
-      if (response.data.email) {
-        setUserEmail(response.data.email);
-        localStorage.setItem('userEmail', response.data.email);
-      }
-    } else if (response.data && response.data.message && response.data.message.toLowerCase().includes('user not found')) {
-      // Show popup when Google email not found in database
-      window.popup('Gmail does not exist');
+      if (response.data.userId) { setUserId(response.data.userId); localStorage.setItem('userId', response.data.userId); }
+      if (response.data.name) { setUserName(response.data.name); localStorage.setItem('userName', response.data.name); }
+      if (response.data.email) { setUserEmail(response.data.email); localStorage.setItem('userEmail', response.data.email); }
     } else {
       toast.error(response.data.message || 'Google login failed');
     }
-
   } catch (error) {
-
     console.log(error);
+    toast.error("Google Login Failed");
+  }
+};
 
+const handleGoogleSignIn = async () => {
+  try {
+    await signInWithRedirect(auth, provider);
+  } catch (error) {
+    console.log(error);
     toast.error("Google Login Failed");
   }
 }
@@ -126,6 +116,10 @@ const handleGoogleSignIn = async () => {
       navigate('/')
      }
    } ,[token])
+
+   useEffect(() => {
+     handleGoogleRedirectResult();
+   }, [])
   if (currentState === 'Login') {
     return (
       <form onSubmit={onSubmitHandler} className='flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800'>
