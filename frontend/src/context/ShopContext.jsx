@@ -5,6 +5,9 @@ import axios from "axios";
 
 export const ShopContext = createContext();
 
+// Send cookies with every request
+axios.defaults.withCredentials = true;
+
 const ShopContextProvider = (props) => {
   const currency = "$";
   const delivery_fee = 10;
@@ -14,22 +17,14 @@ const ShopContextProvider = (props) => {
   const [showCartSidebar, setShowCartSidebar] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
-  const [token, setToken] = useState("");
-  const [userId, setUserId] = useState("");
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  const [token, setToken] = useState(localStorage.getItem('userId') ? 'logged_in' : '');
+  const [userId, setUserId] = useState(localStorage.getItem('userId') || '');
+  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
+  const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail') || '');
   const navigate = useNavigate();
 
-  // Helper function to get authorization headers
-  const getAuthHeaders = (customToken = null) => {
-    const tokenToUse = customToken || token;
-    if (!tokenToUse) return {};
-    
-    return {
-      Authorization: `Bearer ${tokenToUse}`,
-      token: tokenToUse // Backward compatibility
-    };
-  };
+  // Cookie handles auth — no headers needed
+  const getAuthHeaders = () => ({});
 
   // Handle authentication errors
   const handleAuthError = (error) => {
@@ -37,13 +32,19 @@ const ShopContextProvider = (props) => {
     const errorCode = error.response?.data?.code;
 
     if (errorCode === 'TOKEN_EXPIRED' || errorMessage?.includes('expired')) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userEmail');
       setToken('');
+      setUserId('');
       toast.error('Session expired. Please login again');
       navigate('/login');
     } else if (errorCode === 'INVALID_TOKEN' || errorMessage?.includes('invalid') || errorMessage?.includes('authorized') || errorMessage?.includes('No token')) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userEmail');
       setToken('');
+      setUserId('');
       toast.error('Please login to continue');
       navigate('/login');
     }
@@ -153,12 +154,11 @@ const ShopContextProvider = (props) => {
     }
   }
 
-  const getUserCart = async (customToken = null) => {
+  const getUserCart = async () => {
     try {
       const response = await axios.post(
         backendUrl + '/api/cart/get',
-        {},
-        { headers: getAuthHeaders(customToken) }
+        {}
       );
 
       if (response.data.success) {
@@ -179,28 +179,8 @@ const ShopContextProvider = (props) => {
   }, []);
 
   useEffect(() => {
-    if (!token && localStorage.getItem("token")) {
-      const storedToken = localStorage.getItem("token");
-      setToken(storedToken);
-      getUserCart(storedToken);
-    }
-    
-    // Initialize userId from localStorage
-    if (!userId && localStorage.getItem("userId")) {
-      const storedUserId = localStorage.getItem("userId");
-      setUserId(storedUserId);
-    }
-
-    // Initialize userName from localStorage
-    if (!userName && localStorage.getItem("userName")) {
-      const storedUserName = localStorage.getItem("userName");
-      setUserName(storedUserName);
-    }
-
-    // Initialize userEmail from localStorage
-    if (!userEmail && localStorage.getItem("userEmail")) {
-      const storedUserEmail = localStorage.getItem("userEmail");
-      setUserEmail(storedUserEmail);
+    if (localStorage.getItem('userId')) {
+      getUserCart();
     }
   }, []);
 

@@ -12,18 +12,13 @@ import jwt from 'jsonwebtoken';
  */ 
 const authUser = async (req, res, next) => {
     try {
-        // Get token from Authorization header or custom header
-        let token = null;
+        // Get token: cookie first, then Authorization header, then custom header
+        let token = req.cookies?.token || null;
 
-        if (req.headers.authorization) {
-            // Standard: Authorization: Bearer <token>
-            const authHeader = req.headers.authorization;
-            if (authHeader.startsWith('Bearer ')) {
-                token = authHeader.slice(7); // Remove 'Bearer ' prefix
-            }
+        if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+            token = req.headers.authorization.slice(7);
         }
 
-        // Fallback: custom header for backward compatibility
         if (!token && req.headers.token) {
             token = req.headers.token;
         }

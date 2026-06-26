@@ -3,6 +3,7 @@ import { createServer } from 'http'
 import { Server as SocketIOServer } from 'socket.io'
 import express from 'express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 dotenv.config();
 dns.setServers(['1.1.1.1', '8.8.8.8']);
@@ -33,6 +34,7 @@ try {
 
 // Middlewares
 app.use(express.json())
+app.use(cookieParser())
 
 const allowedOrigins = [
     process.env.CORS_ORIGIN,

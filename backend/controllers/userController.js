@@ -6,6 +6,16 @@ import crypto from 'crypto'
 
 const normalizeEmail = (email) => email?.trim().toLowerCase()
 
+const setCookieToken = (res, token) => {
+      const isProduction = process.env.NODE_ENV === 'production';
+      res.cookie('token', token, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+      });
+}
+
 const findUserByEmail = async (email) => {
       const normalizedEmail = normalizeEmail(email)
       if (!normalizedEmail) return null
@@ -52,9 +62,10 @@ const loginUser = async(req, res) => {
                   return res.json({ success: false, message: "Invalid credentials" });
             }
 
-            // Create token
+            // Create token and set as HttpOnly cookie
             const token = createToken(user._id);
-            res.json({ success: true, token, userId: user._id, name: user.name, email: user.email });
+            setCookieToken(res, token);
+            res.json({ success: true, userId: user._id, name: user.name, email: user.email });
 
       } catch (error) {
             console.error("Login error:", error);
@@ -102,8 +113,8 @@ const registerUser = async (req, res) => {
 
             const user = await newUser.save();
             const token = createToken(user._id);
-
-            res.json({ success: true, token, userId: user._id, name: user.name, email: user.email });
+            setCookieToken(res, token);
+            res.json({ success: true, userId: user._id, name: user.name, email: user.email });
 
       } catch (error) {
             console.error("Register error:", error);
@@ -163,7 +174,8 @@ const googleAuth = async (req, res) => {
             }
 
             const token = createToken(user._id);
-            return res.json({ success: true, token, userId: user._id, name: user.name, email: user.email });
+            setCookieToken(res, token);
+            return res.json({ success: true, userId: user._id, name: user.name, email: user.email });
 
       } catch (error) {
             console.error("Google auth error:", error);
@@ -270,4 +282,15 @@ const deleteAddress = async (req, res) => {
     }
 }
 
-export { loginUser, registerUser, adminLogin, googleAuth, getProfile, getAddresses, addAddress, updateAddress, deleteAddress }
+// ============= LOGOUT =============
+const logoutUser = (req, res) => {
+      const isProduction = process.env.NODE_ENV === 'production';
+      res.clearCookie('token', {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+      });
+      res.json({ success: true, message: 'Logged out successfully' });
+}
+
+export { loginUser, registerUser, adminLogin, googleAuth, logoutUser, getProfile, getAddresses, addAddress, updateAddress, deleteAddress }

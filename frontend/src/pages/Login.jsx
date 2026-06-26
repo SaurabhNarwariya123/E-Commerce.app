@@ -23,8 +23,7 @@ const Login = () => {
 
              const response = await axios.post(backendUrl + '/api/user/register' , {name,email,password})
                 if(response.data.success){
-                 setToken(response.data.token)
-                 localStorage.setItem('token' , response.data.token)
+                 setToken('logged_in')
                  if(response.data.userId) {
                    setUserId(response.data.userId)
                    localStorage.setItem('userId' , response.data.userId)
@@ -46,8 +45,7 @@ const Login = () => {
              
              const response = await axios.post(backendUrl + '/api/user/login' , {email,password})
                  if(response.data.success){
-                  setToken(response.data.token)
-                   localStorage.setItem('token' , response.data.token)
+                  setToken('logged_in')
                    if(response.data.userId) {
                      setUserId(response.data.userId)
                      localStorage.setItem('userId' , response.data.userId)
@@ -90,8 +88,7 @@ const handleGoogleSignIn = async () => {
     );
 
     if (response.data.success) {
-      setToken(response.data.token);
-      localStorage.setItem('token', response.data.token);
+      setToken('logged_in');
       if (response.data.userId) {
         setUserId(response.data.userId);
         localStorage.setItem('userId', response.data.userId);
