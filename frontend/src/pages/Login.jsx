@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { signInWithRedirect, getRedirectResult } from 'firebase/auth';
+import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../firebase';
 
 const Login = () => {
@@ -77,19 +77,9 @@ const Login = () => {
 
 const handleGoogleSignIn = async () => {
   try {
-    await signInWithRedirect(auth, provider);
-  } catch (error) {
-    console.log(error);
-    toast.error("Google Login Failed");
-  }
-}
-
-const handleGoogleRedirectResult = async () => {
-  try {
-    const result = await getRedirectResult(auth);
-    if (!result) return;
-
+    const result = await signInWithPopup(auth, provider);
     const user = result.user;
+
     const response = await axios.post(
       backendUrl + '/api/user/google',
       {
@@ -128,10 +118,6 @@ const handleGoogleRedirectResult = async () => {
       navigate('/')
      }
    } ,[token])
-
-  useEffect(() => {
-    handleGoogleRedirectResult();
-  }, [])
   if (currentState === 'Login') {
     return (
       <form onSubmit={onSubmitHandler} className='flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800'>
