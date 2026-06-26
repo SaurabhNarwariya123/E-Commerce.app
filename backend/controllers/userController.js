@@ -2,6 +2,19 @@ import bcrypt from "bcrypt"
 import validator from "validator"
 import userModel from '../models/userModel.js'
 import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
+
+const normalizeEmail = (email) => email?.trim().toLowerCase()
+
+const findUserByEmail = async (email) => {
+      const normalizedEmail = normalizeEmail(email)
+      if (!normalizedEmail) return null
+
+      const escapedEmail = normalizedEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      return userModel.findOne({
+            email: { $regex: `^${escapedEmail}$`, $options: 'i' }
+      })
+}
 
 // ============= TOKEN CREATION FUNCTION =============
 // Creates a JWT token with user ID and expiration
@@ -20,16 +33,17 @@ const createToken = (id) => {
 const loginUser = async(req, res) => {
       try {
             const { email, password } = req.body;
+            const normalizedEmail = normalizeEmail(email)
 
             // Validate input
-            if (!email || !password) {
+            if (!normalizedEmail || !password) {
                   return res.json({ success: false, message: "Email and password are required" });
             }
 
             // Find user
-            const user = await userModel.findOne({ email });
+            const user = await findUserByEmail(normalizedEmail);
             if (!user) {
-                  return res.json({ success: false, message: "User doesn't exist" });
+                  return res.json({ success: false, message: "User not found. Please sign up first." });
             }
 
             // Check password
@@ -52,20 +66,21 @@ const loginUser = async(req, res) => {
 const registerUser = async (req, res) => {
       try {
             const { name, email, password } = req.body;
+            const normalizedEmail = normalizeEmail(email)
 
             // Validate input
-            if (!name || !email || !password) {
+            if (!name || !normalizedEmail || !password) {
                   return res.json({ success: false, message: "All fields are required" });
             }
 
             // Check if user already exists
-            const exists = await userModel.findOne({ email });
+            const exists = await findUserByEmail(normalizedEmail);
             if (exists) {
                   return res.json({ success: false, message: "User already exists" });
             }
 
             // Validate email format
-            if (!validator.isEmail(email)) {
+            if (!validator.isEmail(normalizedEmail)) {
                   return res.json({ success: false, message: "Please enter a valid email" });
             }
 
@@ -81,7 +96,7 @@ const registerUser = async (req, res) => {
             // Create user
             const newUser = new userModel({
                   name,
-                  email,
+                  email: normalizedEmail,
                   password: hashedPassword
             });
 
@@ -127,19 +142,28 @@ const adminLogin = async (req, res) => {
 const googleAuth = async (req, res) => {
       try {
             const { name, email } = req.body;
+            const normalizedEmail = normalizeEmail(email)
 
-            if (!email || !name) {
+            if (!normalizedEmail || !name) {
                   return res.json({ success: false, message: "Name and email are required" });
             }
 
-            const user = await userModel.findOne({ email });
+            let user = await findUserByEmail(normalizedEmail);
 
             if (!user) {
-                  return res.json({ success: false, message: 'User not found. Please sign up first.' });
+                  const salt = await bcrypt.genSalt(10)
+                  const randomPassword = crypto.randomBytes(32).toString('hex')
+                  const hashedPassword = await bcrypt.hash(randomPassword, salt)
+
+                  user = await userModel.create({
+                        name,
+                        email: normalizedEmail,
+                        password: hashedPassword
+                  })
             }
 
             const token = createToken(user._id);
-            return res.json({ success: true, token, userId: user._id, name: user.name, email: user.email, name: user.name, email: user.email });
+            return res.json({ success: true, token, userId: user._id, name: user.name, email: user.email });
 
       } catch (error) {
             console.error("Google auth error:", error);

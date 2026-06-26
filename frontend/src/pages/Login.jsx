@@ -106,9 +106,6 @@ const handleGoogleSignIn = async () => {
         setUserEmail(response.data.email);
         localStorage.setItem('userEmail', response.data.email);
       }
-    } else if (response.data && response.data.message && response.data.message.toLowerCase().includes('user not found')) {
-      // Show popup when Google email not found in database
-      window.popup('Gmail does not exist');
     } else {
       toast.error(response.data.message || 'Google login failed');
     }
@@ -137,7 +134,7 @@ const handleGoogleSignIn = async () => {
         <input onChange={(e)=> setEmail(e.target.value)} value={email} type="email" className='w-full px-3 py-2 border border-gray-800' placeholder='Email' />
         <input onChange={(e)=> setPassword(e.target.value)} value={password} type="password" className='w-full px-3 py-2 border border-gray-800' placeholder='Password' />
 
-        <div className='w-full flex justify-between text-sm mt-[-8px]'>
+        <div className='w-full flex justify-between text-sm -mt-2'>
           <p className='cursor-pointer'> Forgot your password?</p>
           <p onClick={() => setCurrentState('Sign Up')} className='cursor-pointer'>Create Account</p>
         </div>
@@ -165,7 +162,7 @@ const handleGoogleSignIn = async () => {
       <input onChange={(e) => setEmail(e.target.value)} value={email} type='email' className='w-full px-3 py-2 border border-gray-800' placeholder='Email' />
       <input onChange={(e) => setPassword(e.target.value)} value={password} type='password' className='w-full px-3 py-2 border border-gray-800' placeholder='Password' />
 
-      <div className='w-full flex justify-between text-sm mt-[-8px]'>
+      <div className='w-full flex justify-between text-sm -mt-2'>
         <p className='cursor-pointer'> Forgot your password?</p>
         <p onClick={() => setCurrentState('Login')} className='cursor-pointer'>Login</p>
       </div>
