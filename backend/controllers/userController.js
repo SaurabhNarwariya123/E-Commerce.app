@@ -80,7 +80,7 @@ const loginUser = async(req, res) => {
             // Create token and set as HttpOnly cookie
             const token = createToken(user._id);
             setCookieToken(res, token);
-            res.json({ success: true, userId: user._id, name: user.name, email: user.email });
+            res.json({ success: true, token, userId: user._id, name: user.name, email: user.email });
 
       } catch (error) {
             console.error("Login error:", error);
@@ -180,7 +180,7 @@ const verifyEmailOtp = async (req, res) => {
 
             const token = createToken(user._id);
             setCookieToken(res, token);
-            res.json({ success: true, message: "Email verified successfully!", userId: user._id, name: user.name, email: user.email });
+            res.json({ success: true, token, message: "Email verified successfully!", userId: user._id, name: user.name, email: user.email });
 
       } catch (error) {
             console.error("Verify email OTP error:", error);
@@ -328,7 +328,7 @@ const googleAuth = async (req, res) => {
 
             const token = createToken(user._id);
             setCookieToken(res, token);
-            return res.json({ success: true, userId: user._id, name: user.name, email: user.email });
+            return res.json({ success: true, token, userId: user._id, name: user.name, email: user.email });
 
       } catch (error) {
             console.error("Google auth error:", error);

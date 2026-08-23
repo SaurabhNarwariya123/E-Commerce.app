@@ -26,7 +26,10 @@ const Login = () => {
   const[submitting,setSubmitting] = useState(false)
 
   const applySession = (data) => {
-    setToken('logged_in')
+    setToken(data.token || 'logged_in')
+    if (data.token) {
+      localStorage.setItem('token', data.token)
+    }
     if (data.userId) {
       setUserId(data.userId)
       localStorage.setItem('userId', data.userId)

@@ -14,6 +14,7 @@ const Navbar = () => {
    const {setShowSearch , getCartCount , navigate,token,setToken,setCartItems,setUserId,setUserName,setUserEmail, setShowCartSidebar, backendUrl} = useContext(ShopContext);
     const logout = async () => {
        try { await axios.post(backendUrl + '/api/user/logout') } catch (_) {}
+       localStorage.removeItem('token')
        localStorage.removeItem('userId')
        localStorage.removeItem('userName')
        localStorage.removeItem('userEmail')

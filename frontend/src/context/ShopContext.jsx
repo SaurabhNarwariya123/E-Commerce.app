@@ -20,14 +20,19 @@ const ShopContextProvider = (props) => {
   const [wishlist, setWishlist] = useState([]);
   const [products, setProducts] = useState([]);
   const [activeCoupons, setActiveCoupons] = useState([]);
-  const [token, setToken] = useState(localStorage.getItem('userId') ? 'logged_in' : '');
+  const [token, setToken] = useState(localStorage.getItem('token') || (localStorage.getItem('userId') ? 'logged_in' : ''));
   const [userId, setUserId] = useState(localStorage.getItem('userId') || '');
   const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
   const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail') || '');
   const navigate = useNavigate();
 
-  // Cookie handles auth — no headers needed
-  const getAuthHeaders = () => ({});
+  // Cookie is primary; Authorization header is a fallback for cross-site
+  // deployments where third-party cookies get blocked by the browser.
+  const getAuthHeaders = (customToken = null) => {
+    const tokenToUse = customToken || token;
+    if (!tokenToUse || tokenToUse === 'logged_in') return {};
+    return { Authorization: `Bearer ${tokenToUse}`, token: tokenToUse };
+  };
 
   // Handle authentication errors
   const handleAuthError = (error) => {
@@ -35,6 +40,7 @@ const ShopContextProvider = (props) => {
     const errorCode = error.response?.data?.code;
 
     if (errorCode === 'TOKEN_EXPIRED' || errorMessage?.includes('expired')) {
+      localStorage.removeItem('token');
       localStorage.removeItem('userId');
       localStorage.removeItem('userName');
       localStorage.removeItem('userEmail');
@@ -43,6 +49,7 @@ const ShopContextProvider = (props) => {
       toast.error('Session expired. Please login again');
       navigate('/login');
     } else if (errorCode === 'INVALID_TOKEN' || errorMessage?.includes('invalid') || errorMessage?.includes('authorized') || errorMessage?.includes('No token')) {
+      localStorage.removeItem('token');
       localStorage.removeItem('userId');
       localStorage.removeItem('userName');
       localStorage.removeItem('userEmail');
@@ -191,7 +198,7 @@ const ShopContextProvider = (props) => {
   //   //  -------------------- wishlist  -------------------------
   const getWishlist = async () => {
     try {
-      const response = await axios.post(backendUrl + '/api/user/wishlist', {});
+      const response = await axios.post(backendUrl + '/api/user/wishlist', {}, { headers: getAuthHeaders() });
       if (response.data.success) setWishlist(response.data.wishlist || []);
     } catch (error) {
       console.log(error);
@@ -210,7 +217,7 @@ const ShopContextProvider = (props) => {
 
     try {
       const url = backendUrl + (isWished ? '/api/user/wishlist/remove' : '/api/user/wishlist/add');
-      const response = await axios.post(url, { productId });
+      const response = await axios.post(url, { productId }, { headers: getAuthHeaders() });
       if (response.data.success) {
         setWishlist(response.data.wishlist || []);
         toast.success(isWished ? 'Removed from wishlist' : 'Added to wishlist');
@@ -226,7 +233,8 @@ const ShopContextProvider = (props) => {
     try {
       const response = await axios.post(
         backendUrl + '/api/cart/get',
-        {}
+        {},
+        { headers: getAuthHeaders() }
       );
 
       if (response.data.success) {
