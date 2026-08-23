@@ -11,6 +11,10 @@ const productSchema = new mongoose.Schema({
     bestseller:{type: Boolean },
     date:{type:Number , required: true},
     stock:{type: Map, of: Number, default: {}},
+    discountPercent:{type: Number, default: 0, min: 0, max: 90},
+    colors:{type: Array, default: []}, // [{ name: 'Charcoal', hex: '#1A1A1A' }, ...]
+    rating:{type: Number, default: null, min: 0, max: 5},
+    reviewCount:{type: Number, default: 0},
 
 })
 

@@ -3,10 +3,12 @@ import axios from 'axios'
 import { backendUrl, currency } from '../App'
 import { toast } from 'react-toastify'
 import { assets } from '../assets/assets'
+import Invoice from '../../components/Invoice'
 
 const Orders = ({ token }) => {
     const [orders, setOrders] = useState([])
     const [deliveryPersons, setDeliveryPersons] = useState([])
+    const [invoiceOrder, setInvoiceOrder] = useState(null)
 
     const fetchAllOrders = async () => {
         if (!token) return
@@ -71,6 +73,7 @@ const Orders = ({ token }) => {
 
     return (
         <div className="p-2">
+            {invoiceOrder && <Invoice order={invoiceOrder} currency={currency} onClose={() => setInvoiceOrder(null)} />}
             <h3 className="text-xl font-semibold text-gray-800 mb-5">All Orders</h3>
             <div className="space-y-4">
                 {orders.map((order, index) => (
@@ -149,6 +152,12 @@ const Orders = ({ token }) => {
                                     🚲 {order.deliveryPersonName}
                                 </p>
                             )}
+                            <button
+                                onClick={() => setInvoiceOrder(order)}
+                                className="text-xs border border-gray-300 text-gray-600 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition cursor-pointer w-fit"
+                            >
+                                🧾 Invoice
+                            </button>
                         </div>
                     </div>
                 ))}

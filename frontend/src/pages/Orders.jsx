@@ -1,66 +1,15 @@
-import React, { useContext, useEffect, useState, useRef } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext'
 import Title from '../components/Title'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { io } from 'socket.io-client'
+import OTPBoxInput from '../components/OTPBoxInput'
+import Button from '../components/ui/Button'
+import Invoice from '../components/Invoice'
 
 const CANCELLABLE = ['Order Placed', 'Order Confirmed', 'Assigned']
-
-// ─── 6-Box OTP Input ─────────────────────────────────────────────────────────
-const OTPBoxInput = ({ value, onChange, disabled }) => {
-    const inputs = useRef([])
-    const digits = value.split('').concat(Array(6).fill('')).slice(0, 6)
-
-    const handleKey = (e, idx) => {
-        if (e.key === 'Backspace') {
-            onChange(value.slice(0, idx) + value.slice(idx + 1))
-            if (idx > 0) inputs.current[idx - 1]?.focus()
-            return
-        }
-        if (e.key === 'ArrowLeft'  && idx > 0) { inputs.current[idx - 1]?.focus(); return }
-        if (e.key === 'ArrowRight' && idx < 5) { inputs.current[idx + 1]?.focus(); return }
-    }
-
-    const handleChange = (e, idx) => {
-        const char = e.target.value.replace(/\D/g, '').slice(-1)
-        if (!char) return
-        const arr = digits.slice()
-        arr[idx] = char
-        onChange(arr.join('').replace(/ /g, '').slice(0, 6))
-        if (idx < 5) inputs.current[idx + 1]?.focus()
-    }
-
-    const handlePaste = (e) => {
-        const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
-        if (pasted) { onChange(pasted); inputs.current[Math.min(pasted.length, 5)]?.focus() }
-        e.preventDefault()
-    }
-
-    return (
-        <div className="flex gap-2 justify-center mb-5">
-            {digits.map((d, i) => (
-                <input
-                    key={i}
-                    ref={el => inputs.current[i] = el}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={d}
-                    disabled={disabled}
-                    onChange={e => handleChange(e, i)}
-                    onKeyDown={e => handleKey(e, i)}
-                    onPaste={handlePaste}
-                    onFocus={e => e.target.select()}
-                    className="w-11 h-12 border-2 rounded-lg text-center text-xl font-bold text-gray-800
-                               border-gray-200 focus:border-red-400 focus:outline-none
-                               bg-gray-50 focus:bg-white transition-all disabled:opacity-50"
-                />
-            ))}
-        </div>
-    )
-}
 
 // ─── Cancel Order OTP Modal ───────────────────────────────────────────────────
 const CancelModal = ({ orderId, userId, token, backendUrl, onCancelled, onClose }) => {
@@ -110,7 +59,7 @@ const CancelModal = ({ orderId, userId, token, backendUrl, onCancelled, onClose 
     }
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+        <div className="fixed inset-0 bg-charcoal/50 flex items-center justify-center z-50 px-4">
             <div className="bg-white rounded-2xl shadow-2xl p-7 w-full max-w-sm">
 
                 {step === 'confirm' ? (
@@ -118,7 +67,7 @@ const CancelModal = ({ orderId, userId, token, backendUrl, onCancelled, onClose 
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-xl">⚠️</div>
                             <div>
-                                <h3 className="text-base font-bold text-gray-900">Cancel Order?</h3>
+                                <h3 className="text-base font-bold text-charcoal">Cancel Order?</h3>
                                 <p className="text-xs text-gray-400">#{orderId.slice(-8).toUpperCase()}</p>
                             </div>
                         </div>
@@ -126,34 +75,34 @@ const CancelModal = ({ orderId, userId, token, backendUrl, onCancelled, onClose 
                             An OTP will be sent to your registered email to verify this cancellation.
                         </p>
                         <div className="flex gap-3">
-                            <button onClick={onClose} className="flex-1 border border-gray-300 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50">
+                            <Button onClick={onClose} variant='outline' className="flex-1">
                                 Go Back
-                            </button>
-                            <button onClick={requestOTP} disabled={loading} className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-red-600 disabled:opacity-50">
+                            </Button>
+                            <Button onClick={requestOTP} disabled={loading} className="flex-1 bg-red-500! border-red-500! hover:bg-red-600!">
                                 {loading ? 'Sending...' : 'Send OTP'}
-                            </button>
+                            </Button>
                         </div>
                     </>
                 ) : (
                     <>
-                        <h3 className="text-base font-bold text-gray-900 mb-1">Verify Cancellation</h3>
+                        <h3 className="text-base font-bold text-charcoal mb-1">Verify Cancellation</h3>
                         <p className="text-sm text-gray-500 mb-6 leading-relaxed">
                             Enter the 6-digit OTP sent to your email to confirm cancellation.
                         </p>
 
-                        <OTPBoxInput value={otp} onChange={setOtp} disabled={loading} />
+                        <OTPBoxInput value={otp} onChange={setOtp} disabled={loading} accent="red" />
 
                         <div className="flex gap-3">
-                            <button onClick={onClose} className="flex-1 border border-gray-300 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50">
+                            <Button onClick={onClose} variant='outline' className="flex-1">
                                 Keep Order
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 onClick={confirmCancel}
                                 disabled={loading || otp.length !== 6}
-                                className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-red-600 disabled:opacity-40"
+                                className="flex-1 bg-red-500! border-red-500! hover:bg-red-600!"
                             >
                                 {loading ? 'Cancelling...' : 'Confirm Cancel'}
-                            </button>
+                            </Button>
                         </div>
 
                         <button onClick={resendOTP} disabled={resending} className="w-full mt-4 text-xs text-red-500 hover:text-red-700 underline disabled:opacity-50">
@@ -172,6 +121,7 @@ const Orders = () => {
     const navigate = useNavigate()
     const [orders, setOrders]           = useState([])
     const [cancelModal, setCancelModal] = useState(null) // { orderId }
+    const [invoiceOrder, setInvoiceOrder] = useState(null)
 
     const loadOrders = async () => {
         if (!token) return
@@ -216,7 +166,8 @@ const Orders = () => {
     const shownOrders = new Set()
 
     return (
-        <div className="border-t pt-16">
+        <div className="border-t border-beige pt-16">
+            {invoiceOrder && <Invoice order={invoiceOrder} currency={currency} onClose={() => setInvoiceOrder(null)} />}
             {cancelModal && (
                 <CancelModal
                     orderId={cancelModal.orderId}
@@ -238,16 +189,16 @@ const Orders = () => {
                     if (isFirst) shownOrders.add(item.order._id)
 
                     return (
-                        <div key={index} className="py-4 border-t border-b text-gray-700 flex flex-col gap-3">
+                        <div key={index} className="py-4 border-t border-b border-beige text-gray-700 flex flex-col gap-3">
 
                             {/* Product info + actions row */}
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
                                 {/* Product info */}
                                 <div className="flex items-start gap-6 text-sm">
-                                    <img className="w-16 sm:w-20" src={item.image?.[0]} alt="" />
+                                    <img className="w-16 sm:w-20 rounded-lg object-cover" src={item.image?.[0]} alt="" />
                                     <div>
-                                        <p className="sm:text-base font-medium">{item.name}</p>
+                                        <p className="sm:text-base font-medium text-charcoal">{item.name}</p>
                                         <div className="flex items-center gap-3 mt-1 text-gray-600">
                                             <p>{currency} {item.price}</p>
                                             <p>Qty: {item.quantity}</p>
@@ -257,7 +208,7 @@ const Orders = () => {
                                             {new Date(item.order.date).toDateString()} &bull; {item.order.paymentMethod}
                                         </p>
                                         {item.order.deliveryPersonName && (
-                                            <p className="text-xs text-indigo-600 mt-0.5">
+                                            <p className="text-xs text-gold-dark mt-0.5">
                                                 Delivery: <strong>{item.order.deliveryPersonName}</strong>
                                             </p>
                                         )}
@@ -287,11 +238,17 @@ const Orders = () => {
                                         {item.order.status !== 'Cancelled' && (
                                             <button
                                                 onClick={() => navigate('/orders/' + item.order._id)}
-                                                className="border px-4 py-2 text-sm font-medium rounded-sm hover:bg-gray-50 transition"
+                                                className="border border-beige px-4 py-2 text-sm font-medium rounded-full hover:border-gold hover:bg-beige-light/50 transition"
                                             >
                                                 Track Order
                                             </button>
                                         )}
+                                        <button
+                                            onClick={() => setInvoiceOrder(item.order)}
+                                            className="text-xs text-gray-500 hover:text-charcoal underline"
+                                        >
+                                            🧾 Invoice
+                                        </button>
                                     </div>
                                 )}
                             </div>

@@ -6,6 +6,10 @@ import Add from "./pages/Add";
 import List from "./pages/List";
 import Orders from "./pages/Orders";
 import DeliveryPersons from "./pages/DeliveryPersons";
+import Offers from "./pages/Offers";
+import Coupons from "./pages/Coupons";
+import Reports from "./pages/Reports";
+import Customers from "./pages/Customers";
 import Dashboard from "./pages/Dashboard";
 import Stock from "./pages/Stock";
 import Login from "./components/Login";
@@ -22,13 +26,13 @@ const AdminApp = () => {
     }, [token])
 
     return (
-        <div className="bg-gray-50 min-h-screen">
+        <div className="admin-app bg-[#F5F7F6] min-h-screen">
             <ToastContainer />
             {token === ""
                 ? <Login setToken={setToken} />
                 : <>
-                    <Navbar setToken={setToken} />
-                    <hr />
+                    <Navbar setToken={setToken} token={token} />
+                    <hr className="border-gray-200" />
                     <div className="flex w-full">
                         <Sidebar />
                         <div className="w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base">
@@ -40,6 +44,10 @@ const AdminApp = () => {
                                 <Route path="orders"            element={<Orders token={token} />} />
                                 <Route path="stock"             element={<Stock token={token} />} />
                                 <Route path="delivery-persons"  element={<DeliveryPersons token={token} />} />
+                                <Route path="offers"            element={<Offers token={token} />} />
+                                <Route path="coupons"           element={<Coupons token={token} />} />
+                                <Route path="reports"           element={<Reports token={token} />} />
+                                <Route path="customers"         element={<Customers token={token} />} />
                             </Routes>
                         </div>
                     </div>

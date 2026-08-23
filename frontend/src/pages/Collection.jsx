@@ -3,36 +3,43 @@ import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
 import Title from '../components/Title';
 import ProductItem from '../components/ProductItem';
+import { ProductGridSkeleton } from '../components/ui/Skeleton';
 
 const Collection = () => {
-  const {products ,search, showSearch}  = useContext(ShopContext);
+  const {products ,search, showSearch, currency}  = useContext(ShopContext);
   const [showFilter , setShowFilter] = useState(false);
   const [filterProducts , setFilterProducts] = useState([]);
   const [category ,setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
   const [sortType, setSortType] = useState('relavent');
+  const maxProductPrice = products.length > 0 ? Math.max(...products.map(p => p.price)) : 1000;
+  const [maxPrice, setMaxPrice] = useState(maxProductPrice);
+
+  useEffect(() => {
+    setMaxPrice(maxProductPrice);
+  }, [maxProductPrice]);
 
 
   const toggleCategory = (e) =>{
           if(category.includes(e.target.value)){
-               setCategory(prev => prev.filter (item => item != e.target.value)) // 
+               setCategory(prev => prev.filter (item => item != e.target.value)) //
           }
 
           else{
-            setCategory( prev => [...prev,e.target.value]) 
+            setCategory( prev => [...prev,e.target.value])
           }
   }
-   
+
    const toggleSubCategory = (e) =>{
     if(subCategory.includes(e.target.value)){
-        setSubCategory(prev => prev.filter (item => item != e.target.value)) // 
+        setSubCategory(prev => prev.filter (item => item != e.target.value)) //
         }
 
     else{
-          setSubCategory( prev => [...prev,e.target.value]) 
+          setSubCategory( prev => [...prev,e.target.value])
       }
    }
-  
+
     const applyfilter = () =>{
        let productsCopy = products.slice();
 
@@ -49,6 +56,8 @@ const Collection = () => {
 
      }
 
+       productsCopy = productsCopy.filter(item => item.price <= maxPrice);
+
        setFilterProducts(productsCopy)
     }
 
@@ -58,7 +67,7 @@ const Collection = () => {
             case  "low-high":
                setFilterProducts(fpCopy.sort((a,b) => (a.price - b.price)));
              break;
-          
+
              case  "high-low":
                setFilterProducts(fpCopy.sort((a,b) => (b.price - a.price)));
              break;
@@ -74,62 +83,82 @@ const Collection = () => {
 
      useEffect(()=>{
        applyfilter();
-    },[category,subCategory ,search,showSearch,products])
+    },[category,subCategory ,search,showSearch,products,maxPrice])
 
     useEffect(()=>{
        sortProduct();
       },[sortType])
 
+  const loading = products.length === 0
+
   return (
-    <div className='flex flex:col sm:flex-row gap-1 sm:gap-10 pt-10 border-t'>
-    
+    <div className='flex flex-col sm:flex-row gap-6 sm:gap-10 pt-10 border-t border-beige'>
+
         {/* filter Options  */}
 
         <div className='min-w-60'>
-          <p onClick={ () => setShowFilter(!showFilter)} className='my-2 text-xl flex items-center cursor-pointer gap-2'>FILTERS
-            <img className = {`h-3 sm:hidden ${showFilter ? 'rotate-90' : ''} `} src={assets.dropdown_icon} alt="" />
+          <p onClick={ () => setShowFilter(!showFilter)} className='my-2 text-xl prata-regular text-charcoal flex items-center cursor-pointer gap-2'>Filters
+            <img className = {`h-3 sm:hidden transition-transform ${showFilter ? 'rotate-90' : ''} `} src={assets.dropdown_icon} alt="" />
           </p>
 
-           
+
            {/* category Filter */}
-           <div className={`border border-gray-300 pl-5 py-3 mt-6 ${ showFilter ? '' : 'hidden'} sm:block`}>
-            <p className='mb-3 text-sm font-medium'>CATEGORIES</p>
-             <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
+           <div className={`border border-beige rounded-xl pl-5 py-4 mt-6 ${ showFilter ? '' : 'hidden'} sm:block`}>
+            <p className='mb-3 text-sm font-medium text-charcoal tracking-wide'>CATEGORIES</p>
+             <div className='flex flex-col gap-2.5 text-sm font-light text-gray-600'>
 
-                <p className='flex gap-2'>
-                  <input  className = 'w-3' type="checkbox" value={'Men'} onChange={toggleCategory}/> Men
-                </p>
+                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                  <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Men'} onChange={toggleCategory}/> Men
+                </label>
 
-                <p className='flex gap-2'>
-                  <input  className = 'w-3' type="checkbox" value={'Women'} onChange={toggleCategory} /> Women
-                </p>
+                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                  <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Women'} onChange={toggleCategory} /> Women
+                </label>
 
-                <p className='flex gap-2'>
-                  <input  className = 'w-3' type="checkbox" value={'Kids'} onChange={toggleCategory} /> Kids
-                </p>
+                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                  <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Kids'} onChange={toggleCategory} /> Kids
+                </label>
 
 
              </div>
            </div>
            {/* SubCategory Filter */}
 
-           <div className={`border border-gray-300 pl-5 py-3 mt-5 ${ showFilter ? '' : 'hidden'} sm:block`}>
-            <p className='mb-3 text-sm font-medium'>TYPE</p>
-             <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
-                <p className='flex gap-2'>
-                  <input  className = 'w-3' type="checkbox" value={'Topwear'} onChange={toggleSubCategory} /> Topwear
-                </p>
+           <div className={`border border-beige rounded-xl pl-5 py-4 mt-5 ${ showFilter ? '' : 'hidden'} sm:block`}>
+            <p className='mb-3 text-sm font-medium text-charcoal tracking-wide'>TYPE</p>
+             <div className='flex flex-col gap-2.5 text-sm font-light text-gray-600'>
+                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                  <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Topwear'} onChange={toggleSubCategory} /> Topwear
+                </label>
 
-                <p className='flex gap-2'>
-                  <input  className = 'w-3' type="checkbox" value={'Bottomwear'} onChange={toggleSubCategory}/> Bottomwear
-                </p>
+                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                  <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Bottomwear'} onChange={toggleSubCategory}/> Bottomwear
+                </label>
 
-                <p className='flex gap-2'>
-                  <input  className = 'w-3' type="checkbox" value={'Winterwear'}  onChange={toggleSubCategory}/> Winterwear
-                </p>
+                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                  <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Winterwear'}  onChange={toggleSubCategory}/> Winterwear
+                </label>
 
 
              </div>
+           </div>
+
+           {/* Price Range Filter */}
+
+           <div className={`border border-beige rounded-xl pl-5 pr-4 py-4 mt-5 ${ showFilter ? '' : 'hidden'} sm:block`}>
+            <p className='mb-3 text-sm font-medium text-charcoal tracking-wide'>PRICE</p>
+            <input
+              type='range'
+              min='0'
+              max={maxProductPrice}
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(Number(e.target.value))}
+              className='w-full accent-gold cursor-pointer'
+            />
+            <div className='flex items-center justify-between text-xs text-gray-500 mt-1'>
+              <span>{currency}0</span>
+              <span className='text-charcoal font-medium'>Up to {currency}{maxPrice}</span>
+            </div>
            </div>
         </div>
 
@@ -137,14 +166,14 @@ const Collection = () => {
 
          <div className='flex-1'>
 
-          <div className='flex justify-between text-base sm:text-2xl mb-4' >
+          <div className='flex justify-between items-center mb-6' >
 
            <Title text1={"ALL"} text2={'COLLECTION'}/>
 
            {/* Product Sort */}
 
-            <select  onChange = {(e) => setSortType(e.target.value)} className='border-2 border-gray-300 text-sm px-2'>
-              <option value="relavent">Sort by: Relavant</option>
+            <select  onChange = {(e) => setSortType(e.target.value)} className='border border-beige rounded-full text-sm px-4 py-2 text-gray-600 focus:outline-none focus:border-gold transition-colors'>
+              <option value="relavent">Sort by: Relevant</option>
               <option value="low-high">Sort by: Low to High</option>
               <option value="high-low">Sort by: High to Low</option>
 
@@ -153,14 +182,18 @@ const Collection = () => {
 
           {/* Map Product*/}
 
-           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6'>
+          {loading ? (
+            <ProductGridSkeleton count={9} />
+          ) : (
+           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8'>
                {
                  filterProducts.map((item,index)=>(
-                  <ProductItem key={index}  name={item.name} id={item._id} price={item.price} image={item.image} />        
+                  <ProductItem key={index}  name={item.name} id={item._id} price={item.price} image={item.image} discountPercent={item.discountPercent} colors={item.colors} rating={item.rating} reviewCount={item.reviewCount} />
 
                  ))
                }
            </div>
+          )}
          </div>
     </div>
   )

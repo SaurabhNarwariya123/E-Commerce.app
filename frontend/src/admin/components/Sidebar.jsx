@@ -1,44 +1,38 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { assets } from '../assets/assets'
+
+const NAV_ITEMS = [
+    { to: '/admin/dashboard',        icon: '🏠', label: 'Dashboard' },
+    { to: '/admin/list',             icon: '🛍️', label: 'Products' },
+    { to: '/admin/stock',            icon: '📊', label: 'Stock' },
+    { to: '/admin/orders',           icon: '📋', label: 'Orders' },
+    { to: '/admin/customers',        icon: '👥', label: 'Customers' },
+    { to: '/admin/delivery-persons', icon: '🚲', label: 'Delivery Partners' },
+    { to: '/admin/offers',           icon: '🎉', label: 'Festival Offers' },
+    { to: '/admin/coupons',          icon: '🏷️', label: 'Coupons' },
+    { to: '/admin/reports',          icon: '📈', label: 'Reports' },
+]
+
+const NavItem = ({ to, icon, label }) => (
+    <NavLink
+        to={to}
+        className={({ isActive }) =>
+            `flex items-center gap-3 px-3.5 py-2.5 rounded-full text-sm font-medium transition-colors duration-200 ${
+                isActive ? 'bg-green-700 text-white shadow-sm' : 'text-gray-600 hover:bg-green-50'
+            }`
+        }
+    >
+        <span className='text-base w-5 text-center shrink-0'>{icon}</span>
+        <span className='hidden md:block truncate'>{label}</span>
+    </NavLink>
+)
 
 const Sidebar = () => {
-    const link = "flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l"
-    const active = { background: '#f3f4f6' }
-
     return (
-        <div className='w-[18%] min-h-screen border-r-2'>
-            <div className='flex flex-col gap-3 pt-6 pl-5 text-[14px]'>
+        <div className='w-[18%] min-w-16 h-screen sticky top-0 border-r border-gray-200 bg-white overflow-y-auto'>
+            <div className='flex flex-col gap-1 py-6 px-3'>
 
-                <NavLink className={link} style={({ isActive }) => isActive ? active : {}} to="/admin/dashboard">
-                    <img className='w-5 h-5' src={assets.order_icon} alt="" />
-                    <p className='hidden md:block'>Dashboard</p>
-                </NavLink>
-
-                <NavLink className={link} style={({ isActive }) => isActive ? active : {}} to="/admin/add">
-                    <img className='w-5 h-5' src={assets.add_icon} alt="" />
-                    <p className='hidden md:block'>Add Items</p>
-                </NavLink>
-
-                <NavLink className={link} style={({ isActive }) => isActive ? active : {}} to='/admin/list'>
-                    <img className='w-5 h-5' src={assets.order_icon} alt="" />
-                    <p className='hidden md:block'>Products</p>
-                </NavLink>
-
-                <NavLink className={link} style={({ isActive }) => isActive ? active : {}} to='/admin/stock'>
-                    <img className='w-5 h-5' src={assets.parcel_icon} alt="" />
-                    <p className='hidden md:block'>Stock</p>
-                </NavLink>
-
-                <NavLink className={link} style={({ isActive }) => isActive ? active : {}} to='/admin/orders'>
-                    <img className='w-5 h-5' src={assets.order_icon} alt="" />
-                    <p className='hidden md:block'>Orders</p>
-                </NavLink>
-
-                <NavLink className={link} style={({ isActive }) => isActive ? active : {}} to='/admin/delivery-persons'>
-                    <img className='w-5 h-5' src={assets.parcel_icon} alt="" />
-                    <p className='hidden md:block'>Delivery Partners</p>
-                </NavLink>
+                {NAV_ITEMS.map(item => <NavItem key={item.to} {...item} />)}
 
             </div>
         </div>

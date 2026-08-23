@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { sendOrderStatusEmail } from '../config/email.js'
 
+const REWARD_RATE = 0.02 // 2% of order amount, awarded as reward points on delivery
+
 // ─── Admin: Add delivery person ───────────────────────────────────────────────
 const addDeliveryPerson = async (req, res) => {
     try {
@@ -280,6 +282,12 @@ const updateDeliveryOrderStatus = async (req, res) => {
                 $inc:  { totalDelivered: 1 },
                 isAvailable: true
             })
+
+            if (!order.rewardPointsAwarded) {
+                const pointsEarned = Math.floor(order.amount * REWARD_RATE)
+                await userModel.findByIdAndUpdate(order.userId, { $inc: { rewardPoints: pointsEarned } })
+                await orderModel.findByIdAndUpdate(orderId, { rewardPointsAwarded: true, rewardPointsEarned: pointsEarned })
+            }
         }
 
         // Notify customer + admin via socket with full step detail

@@ -3,6 +3,7 @@ import {assets} from '../assets/assets'
 import { NavLink } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { ShopContext } from '../context/ShopContext'
+import IconButton from './ui/IconButton'
 import axios from 'axios'
 
 
@@ -23,75 +24,96 @@ const Navbar = () => {
        setCartItems({})
        navigate('/login')
     }
+
+  const navLinkClass = ({ isActive }) =>
+    `group relative flex flex-col items-center gap-1 text-xs tracking-[0.15em] uppercase transition-colors duration-200 ${isActive ? 'active text-charcoal' : 'text-gray-500 hover:text-charcoal'}`
+
   return (
-    <div className='flex items-center justify-between py-5 font-medium'>
-     <Link to="/"> <img src={assets.logo} className='w-36 ' alt="" /></Link> 
-       
-       <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
-      
-        <NavLink to= '/' className= 'flex flex-col items-center gap-1'> 
-          <p>Home </p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden'/>
+    <>
+    <div className='sticky top-0 z-30 flex items-center justify-between py-3.5 sm:py-5 font-medium border-b border-beige bg-ivory/90 backdrop-blur-md shadow-sm shadow-black/2'>
+     <Link to="/" className='transition-transform duration-300 hover:scale-105'> <img src={assets.logo} className='w-28 sm:w-36' alt="" /></Link>
+
+       <ul className='hidden sm:flex gap-8'>
+
+        <NavLink to= '/' className={navLinkClass}>
+          <p>Home</p>
+          <hr className='absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 border-none h-[1.5px] bg-gold rounded-full transition-all duration-300 in-[.active]:w-full group-hover:w-full'/>
         </NavLink>
 
-        <NavLink to= '/collection' className= 'flex flex-col items-center gap-1'> 
-          <p>COLLECTION</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden'/>
+        <NavLink to= '/collection' className={navLinkClass}>
+          <p>Collection</p>
+          <hr className='absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 border-none h-[1.5px] bg-gold rounded-full transition-all duration-300 in-[.active]:w-full group-hover:w-full'/>
         </NavLink>
 
-        <NavLink to= '/about' className= 'flex flex-col items-center gap-1 h'> 
-          <p>ABOUT </p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden'/>
+        <NavLink to= '/about' className={navLinkClass}>
+          <p>About</p>
+          <hr className='absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 border-none h-[1.5px] bg-gold rounded-full transition-all duration-300 in-[.active]:w-full group-hover:w-full'/>
         </NavLink>
 
-        <NavLink to= '/contact' className= 'flex flex-col items-center gap-1'> 
-          <p>CONTACT</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden'/>
+        <NavLink to= '/contact' className={navLinkClass}>
+          <p>Contact</p>
+          <hr className='absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 border-none h-[1.5px] bg-gold rounded-full transition-all duration-300 in-[.active]:w-full group-hover:w-full'/>
         </NavLink>
        </ul>
 
-       <div className='flex items-center gap-6'>
-             <img onClick={ () => setShowSearch(true)} src={assets.search_icon} className='w-5 cursor-pointer' />
-             <div className='group relative '>
-        
-            <img onClick={()=> token ? null : navigate('/login')} src={assets.profile_icon} className='w-5 cursor-pointer' alt="" />
+       <div className='flex items-center gap-2'>
+             <IconButton onClick={() => setShowSearch(true)} aria-label='Search'>
+               <img src={assets.search_icon} className='w-4.5' alt="" />
+             </IconButton>
+             <div className='group relative'>
+
+            <IconButton onClick={()=> token ? null : navigate('/login')} aria-label='Account'>
+              <img src={assets.profile_icon} className='w-4.5' alt="" />
+            </IconButton>
 
                {/*  -----------------Drop down -------------  */}
-                
-                { token && 
-                     <div className='group-hover:block  hidden absolute dropdown-menu right-0 pt-4'>
-                     <div className='flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded'>
-                        <p onClick={() => navigate('/profile')} className='cursor-pointer hover:text-black'>My Profile</p>
-                        <p onClick={() =>navigate('/orders')} className='cursor-pointer hover:text-black'>Order</p>
-                        <p onClick={logout} className='cursor-pointer hover:text-black'>Logout</p>
-                    </div> 
-                  </div>   
-                }  
+
+                { token &&
+                     <div className='group-hover:block hidden absolute dropdown-menu right-0 pt-3 z-20'>
+                     <div className='flex flex-col gap-0.5 w-44 py-2 px-1.5 bg-white border border-beige rounded-xl shadow-xl shadow-black/5 text-sm text-gray-600 animate-pop origin-top-right'>
+                        <p onClick={() => navigate('/profile')} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-gold-dark hover:bg-beige-light/70 transition-colors'>My Profile</p>
+                        <p onClick={() =>navigate('/orders')} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-gold-dark hover:bg-beige-light/70 transition-colors'>Orders</p>
+                        <p onClick={() =>navigate('/wishlist')} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-gold-dark hover:bg-beige-light/70 transition-colors'>Wishlist</p>
+                        <hr className='my-1 border-beige' />
+                        <p onClick={logout} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-rose hover:bg-rose/5 transition-colors'>Logout</p>
+                    </div>
+                  </div>
+                }
               </div>
-                <button onClick={() => setShowCartSidebar(true)} className='relative'>
-                   <img src={assets.cart_icon} alt="" className='w-5 min-w-5'/>
-                   <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'> {getCartCount()} </p>
-                </button>
-                <img onClick = {() => setVisible(true)} src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="" />
+                {token &&
+                  <IconButton onClick={() => navigate('/wishlist')} aria-label='Wishlist'>
+                    <svg className='w-4.5 h-4.5' fill='none' stroke='currentColor' strokeWidth='1.8' viewBox='0 0 24 24'>
+                      <path strokeLinecap='round' strokeLinejoin='round' d='M12 21s-7.5-4.6-10-9.1C.5 8.5 2.3 5 6 5c2 0 3.5 1 4 2.3C10.5 6 12 5 14 5c3.7 0 5.5 3.5 4 6.9C19.5 16.4 12 21 12 21z' />
+                    </svg>
+                  </IconButton>
+                }
+                <IconButton onClick={() => setShowCartSidebar(true)} badge={getCartCount()} aria-label='Cart'>
+                   <img src={assets.cart_icon} alt="" className='w-4.5'/>
+                </IconButton>
+                <IconButton onClick={() => setVisible(true)} className='sm:hidden' aria-label='Menu'>
+                  <img src={assets.menu_icon} className='w-4.5' alt="" />
+                </IconButton>
             </div>
+    </div>
+
       {/* Sidebar menu for small screens */}
 
-      <div className ={`absolute top-0 right-0 overflow-hidden bg-white transition-all ${ visible ? 'w-full' : 'w-0' } `}>
-             <div className='flex flex-col text-gray-600'>
-               <div  onClick ={()=> setVisible(false)} className='flex items-center gap-4 p-3 cursor-pointer'>
-                <img  className="h-4 rotate-180" src = {assets.dropdown_icon} alt="" />
-                <p>Back</p>
+      <div className ={`fixed inset-0 z-40 bg-charcoal/80 transition-opacity duration-300 ${ visible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none' }`} onClick={() => setVisible(false)}></div>
 
+      <div className ={`fixed top-0 right-0 z-50 h-screen w-[80%] max-w-xs overflow-hidden bg-white shadow-2xl transition-transform duration-300 ease-out ${ visible ? 'translate-x-0' : 'translate-x-full' } `}>
+             <div className='flex flex-col text-gray-600 h-full'>
+               <div className='flex items-center justify-between p-5 border-b border-beige'>
+                <img src={assets.logo} className='w-24' alt="" />
+                <button onClick={()=> setVisible(false)} aria-label='Close menu' className='text-2xl leading-none text-gray-400 hover:text-charcoal transition-colors cursor-pointer'>&times;</button>
                </div>
-               <NavLink   onClick={()=> setVisible(false)}   className='py-2 pl-6 border' to='/'>HOME</NavLink>
-               <NavLink   onClick={()=> setVisible(false)}  className='py-2 pl-6 border'to='/collection'>COLLECTION</NavLink>
-               <NavLink   onClick={()=> setVisible(false)}  className='py-2 pl-6 border' to='/about'>ABOUT</NavLink>
-               <NavLink   onClick={()=> setVisible(false)}  className='py-2 pl-6 border' to='/contact'>CONTACT</NavLink>
+               <NavLink   onClick={()=> setVisible(false)}   className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-gold-dark hover:bg-beige-light/60 ${isActive ? 'text-gold-dark bg-beige-light/60 font-semibold' : ''}`} to='/'>HOME</NavLink>
+               <NavLink   onClick={()=> setVisible(false)}  className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-gold-dark hover:bg-beige-light/60 ${isActive ? 'text-gold-dark bg-beige-light/60 font-semibold' : ''}`} to='/collection'>COLLECTION</NavLink>
+               <NavLink   onClick={()=> setVisible(false)}  className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-gold-dark hover:bg-beige-light/60 ${isActive ? 'text-gold-dark bg-beige-light/60 font-semibold' : ''}`} to='/about'>ABOUT</NavLink>
+               <NavLink   onClick={()=> setVisible(false)}  className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-gold-dark hover:bg-beige-light/60 ${isActive ? 'text-gold-dark bg-beige-light/60 font-semibold' : ''}`} to='/contact'>CONTACT</NavLink>
 
              </div>
       </div>
-       
-    </div>
+    </>
   )
 }
 

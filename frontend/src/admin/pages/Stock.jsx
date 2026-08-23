@@ -90,7 +90,7 @@ const Stock = ({ token }) => {
                     placeholder="Search products..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 w-48"
+                    className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 w-48"
                 />
                 <div className="flex bg-gray-100 rounded-lg p-0.5 gap-0.5">
                     {['all', 'low'].map(f => (
@@ -145,7 +145,7 @@ const Stock = ({ token }) => {
                                                                 min={0}
                                                                 value={draft[size]}
                                                                 onChange={e => setDraft({ ...draft, [size]: e.target.value })}
-                                                                className="w-14 border border-gray-300 rounded px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                                                                className="w-14 border border-gray-300 rounded px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-green-400"
                                                             />
                                                         </div>
                                                     ))}
@@ -190,7 +190,7 @@ const Stock = ({ token }) => {
                                                     <button
                                                         onClick={() => saveStock(product._id)}
                                                         disabled={saving}
-                                                        className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                                                        className="text-xs bg-green-700 text-white px-3 py-1.5 rounded-lg hover:bg-green-800 disabled:opacity-50"
                                                     >
                                                         {saving ? 'Saving...' : 'Save'}
                                                     </button>

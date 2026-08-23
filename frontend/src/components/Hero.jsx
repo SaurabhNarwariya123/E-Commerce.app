@@ -3,29 +3,35 @@ import { assets } from '../assets/assets'
 
 const Hero = () => {
   return (
-    <div className='flex flex-col sm:flex-row border border-gray-400'>
+    <div className='relative flex flex-col sm:flex-row rounded-2xl overflow-hidden border border-beige bg-linear-to-br from-beige-light/60 via-ivory to-beige/30'>
+        {/* Ambient gold glow */}
+        <div className='pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full bg-gold/20 blur-3xl'></div>
+        <div className='pointer-events-none absolute -bottom-24 right-1/3 w-64 h-64 rounded-full bg-rose/10 blur-3xl'></div>
+
         {/* Hero left side */}
 
-        <div className='w-full sm:w-1/2 flex items-center justify-center py-10 sm:py-0'>
-         <div className=' text-[#414141]'>
-            <div className='flex items-center gap-2'>
-                <p className=' w-8 md:w-11 h-[2px] bg-[#414141]'></p>
-                 <p className = 'font-medium text-sm md:text-base'>OUR BESTSELLERS</p>
+        <div className='relative w-full sm:w-1/2 flex items-center justify-center py-14 sm:py-0 px-6'>
+         <div className='text-charcoal'>
+            <div className='flex items-center gap-2 animate-fade-in-up'>
+                <p className='w-8 md:w-11 h-[2px] bg-gold'></p>
+                 <p className='font-medium text-sm md:text-base tracking-[0.2em] gold-gradient-text'>OUR BESTSELLERS</p>
 
             </div>
-            <h1 className=' prata-regular text-3xl sm:py-3 lg:text-5xl leading-relaxed'>Latest Arrivals</h1>
-             <div className=' flex items-center gap-2'>
-                <p className='font-semibold text-sm md:text-base'>SHOP NOW </p>
+            <h1 className='prata-regular text-4xl sm:py-3 lg:text-6xl leading-relaxed animate-fade-in-up' style={{ animationDelay: '0.1s' }}>Latest Arrivals</h1>
+             <a href='#latest-collection' className='flex items-center gap-2 group w-fit animate-fade-in-up' style={{ animationDelay: '0.2s' }}>
+                <p className='font-semibold text-sm md:text-base group-hover:text-gold-dark transition-colors'>SHOP NOW</p>
 
-                 <p className=' w-8 md:w-11 h-[1px] bg-[#414141]'></p>
-             </div>
+                 <p className='w-8 md:w-11 h-[1px] bg-charcoal group-hover:bg-gold group-hover:w-12 transition-all'></p>
+             </a>
          </div>
         </div>
 
         {/*  Hero Right side */}
 
-
-        <img  className = 'w-full sm:w-1/2'src={assets.hero_img} alt="" />
+        <div className='relative w-full sm:w-1/2 overflow-hidden'>
+          <img className='w-full h-full object-cover max-h-[520px] animate-float' src={assets.hero_img} alt="" />
+          <div className='absolute inset-0 bg-linear-to-t from-charcoal/10 via-transparent to-transparent sm:bg-linear-to-l'></div>
+        </div>
     </div>
   )
 }

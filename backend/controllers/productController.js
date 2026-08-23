@@ -6,7 +6,7 @@ import productModel from '../models/productModel.js'
 
  const addProduct = async(req,res)=>{  
     try {
-          const  {name, description, price, category, subCategory, sizes, bestseller, stock } = req.body
+          const  {name, description, price, category, subCategory, sizes, bestseller, stock, discountPercent, colors, rating, reviewCount } = req.body
 
           const image1 = req.files.image1 && req.files.image1[0];
           const image2 = req.files.image2 && req.files.image2[0];
@@ -32,6 +32,11 @@ import productModel from '../models/productModel.js'
              parsedSizes.forEach(s => { stockData[s] = 0 })
          }
 
+         let colorsData = []
+         if (colors) {
+             colorsData = typeof colors === 'string' ? JSON.parse(colors) : colors
+         }
+
          const productData = {
              name,
              description,
@@ -42,7 +47,11 @@ import productModel from '../models/productModel.js'
              sizes: parsedSizes,
              image:imageUrl,
              date:Date.now(),
-             stock: stockData
+             stock: stockData,
+             discountPercent: discountPercent ? Number(discountPercent) : 0,
+             colors: colorsData,
+             rating: rating !== undefined && rating !== '' ? Number(rating) : null,
+             reviewCount: reviewCount ? Number(reviewCount) : 0,
          }
 
          console.log(productData);
@@ -120,4 +129,37 @@ import productModel from '../models/productModel.js'
 
  }
 
- export {listProduct,addProduct,removeProduct,singleProduct}
+// function to update editable product fields (price, discount, colors, bestseller, stock)
+
+ const updateProduct = async(req,res)=>{
+
+    try {
+        const { id, price, discountPercent, colors, bestseller, stock, rating, reviewCount } = req.body
+
+        if (!id) {
+            return res.json({ success:false, message:"Product id is required" })
+        }
+
+        const update = {}
+        if (price !== undefined) update.price = Number(price)
+        if (discountPercent !== undefined) update.discountPercent = Number(discountPercent)
+        if (bestseller !== undefined) update.bestseller = bestseller === true || bestseller === "true"
+        if (colors !== undefined) update.colors = typeof colors === 'string' ? JSON.parse(colors) : colors
+        if (stock !== undefined) update.stock = typeof stock === 'string' ? JSON.parse(stock) : stock
+        if (rating !== undefined) update.rating = rating === '' ? null : Number(rating)
+        if (reviewCount !== undefined) update.reviewCount = Number(reviewCount) || 0
+
+        const product = await productModel.findByIdAndUpdate(id, update, { new: true })
+        if (!product) {
+            return res.json({ success:false, message:"Product not found" })
+        }
+
+        res.json({ success:true, message:"Product Updated", product })
+
+    } catch (error) {
+        console.log(error);
+        res.json({success:false,message:error.message})
+    }
+ }
+
+ export {listProduct,addProduct,removeProduct,singleProduct,updateProduct}

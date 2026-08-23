@@ -27,7 +27,7 @@ const CartSidebar = () => {
         <>
             {/* Backdrop */}
             <div
-                className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${showCartSidebar ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`fixed inset-0 bg-charcoal/50 z-40 transition-opacity duration-300 ${showCartSidebar ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 onClick={close}
             />
 
@@ -35,17 +35,17 @@ const CartSidebar = () => {
             <div className={`fixed top-0 right-0 h-full w-80 bg-white z-50 shadow-2xl flex flex-col transition-transform duration-300 ease-in-out ${showCartSidebar ? 'translate-x-0' : 'translate-x-full'}`}>
 
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b shrink-0">
+                <div className="flex items-center justify-between px-5 py-4 border-b border-beige shrink-0">
                     <div className="flex items-center gap-2">
                         <span className="text-lg">🛒</span>
-                        <h2 className="text-base font-semibold text-gray-900">
+                        <h2 className="text-base font-semibold text-charcoal">
                             Your Cart
                             {items.length > 0 && (
-                                <span className="ml-2 text-xs bg-black text-white rounded-full px-2 py-0.5">{items.length}</span>
+                                <span className="ml-2 text-xs bg-gold text-white rounded-full px-2 py-0.5">{items.length}</span>
                             )}
                         </h2>
                     </div>
-                    <button onClick={close} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-800 transition text-lg leading-none">
+                    <button onClick={close} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-beige-light text-gray-500 hover:text-charcoal transition text-lg leading-none">
                         ✕
                     </button>
                 </div>
@@ -58,14 +58,14 @@ const CartSidebar = () => {
                             <p className="text-gray-500 text-sm font-medium">Your cart is empty</p>
                             <button
                                 onClick={() => { close(); navigate('/collection') }}
-                                className="text-xs bg-black text-white px-4 py-2 rounded-full hover:bg-gray-900 transition"
+                                className="text-xs bg-charcoal text-white px-4 py-2 rounded-full hover:bg-black transition"
                             >
                                 Shop Now
                             </button>
                         </div>
                     ) : (
                         items.map(({ product, size, qty }) => (
-                            <div key={`${product._id}-${size}`} className="flex gap-3 bg-gray-50 rounded-xl p-3 group">
+                            <div key={`${product._id}-${size}`} className="flex gap-3 bg-beige-light/50 rounded-xl p-3 group">
                                 <img
                                     src={product.image?.[0]}
                                     alt={product.name}
@@ -73,7 +73,7 @@ const CartSidebar = () => {
                                     onClick={() => { close(); navigate(`/product/${product._id}`) }}
                                 />
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-800 truncate leading-tight">{product.name}</p>
+                                    <p className="text-sm font-medium text-charcoal truncate leading-tight">{product.name}</p>
                                     <p className="text-xs text-gray-400 mt-0.5">Size: <span className="font-medium text-gray-600">{size}</span></p>
 
                                     <div className="flex items-center justify-between mt-2">
@@ -81,15 +81,15 @@ const CartSidebar = () => {
                                         <div className="flex items-center gap-1.5">
                                             <button
                                                 onClick={() => updateQuantity(product._id, size, qty - 1)}
-                                                className="w-6 h-6 rounded-full bg-white border border-gray-300 text-xs flex items-center justify-center hover:bg-gray-100 transition font-bold"
+                                                className="w-6 h-6 rounded-full bg-white border border-beige text-xs flex items-center justify-center hover:bg-beige-light transition font-bold"
                                             >−</button>
                                             <span className="text-xs font-semibold w-5 text-center">{qty}</span>
                                             <button
                                                 onClick={() => updateQuantity(product._id, size, qty + 1)}
-                                                className="w-6 h-6 rounded-full bg-white border border-gray-300 text-xs flex items-center justify-center hover:bg-gray-100 transition font-bold"
+                                                className="w-6 h-6 rounded-full bg-white border border-beige text-xs flex items-center justify-center hover:bg-beige-light transition font-bold"
                                             >+</button>
                                         </div>
-                                        <p className="text-sm font-bold text-gray-900">{currency}{(product.price * qty).toFixed(2)}</p>
+                                        <p className="text-sm font-bold text-charcoal">{currency}{(product.price * qty).toFixed(2)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -99,21 +99,21 @@ const CartSidebar = () => {
 
                 {/* Footer */}
                 {items.length > 0 && (
-                    <div className="border-t px-5 py-4 space-y-3 shrink-0 bg-white">
+                    <div className="border-t border-beige px-5 py-4 space-y-3 shrink-0 bg-white">
                         <div className="flex items-center justify-between">
                             <span className="text-sm text-gray-600">Subtotal</span>
-                            <span className="text-base font-bold text-gray-900">{currency}{getCartAmount().toFixed(2)}</span>
+                            <span className="text-base font-bold text-charcoal">{currency}{getCartAmount().toFixed(2)}</span>
                         </div>
                         <p className="text-xs text-gray-400">Shipping & taxes calculated at checkout</p>
                         <button
                             onClick={handleCheckout}
-                            className="w-full bg-black text-white py-3 rounded-xl text-sm font-semibold hover:bg-gray-900 active:scale-95 transition-all"
+                            className="w-full bg-gold text-white py-3 rounded-full text-sm font-semibold hover:bg-gold-dark active:scale-95 transition-all"
                         >
                             Checkout →
                         </button>
                         <button
                             onClick={handleViewCart}
-                            className="w-full border border-gray-300 text-gray-700 py-2.5 rounded-xl text-sm hover:bg-gray-50 transition"
+                            className="w-full border border-beige text-charcoal py-2.5 rounded-full text-sm hover:bg-beige-light transition"
                         >
                             View Full Cart
                         </button>

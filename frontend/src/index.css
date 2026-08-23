@@ -1,17 +1,92 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Cormorant+Garamond:ital,wght@0,400..700;1,400..700&family=Inter:wght@300..800&family=Manrope:wght@300..800&display=swap');
 @import "tailwindcss";
+
+/* ── Editorial palette: ivory/beige base, champagne gold + muted olive accents, charcoal contrast ── */
+@theme {
+  --color-ivory: #F7F5F0;
+  --color-charcoal: #171717;
+  --color-beige: #E8E1D5;
+  --color-beige-light: #F1EDE3;
+  --color-gold: #C6A15B;
+  --color-gold-light: #D8BC85;
+  --color-gold-dark: #A9843F;
+  --color-rose: #6F7561;
+  --font-serif: "Playfair Display", "Cormorant Garamond", serif;
+  --font-sans: "Inter", "Manrope", sans-serif;
+  --animate-fade-in: fadeIn 0.25s ease-out;
+  --animate-fade-in-up: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-pop: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes pop {
+  0%   { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Scroll-reveal: elements fade/slide in once visible (see useReveal hook) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(90deg, var(--color-gold-dark), var(--color-gold), var(--color-rose));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
 a.active hr{
     display: block;
 }
 *{
-    font-family: Outfit;
+    font-family: var(--font-sans);
+    font-weight: 300;
+}
+
+/* Admin panel keeps its own SaaS-style Google Font, scoped so the storefront's
+   editorial serif/sans branding is untouched. */
+.admin-app, .admin-app * {
+    font-family: "Inter", sans-serif;
 }
 
 .prata-regular {
-    font-family: "Prata", serif;
-    font-weight: 400;
+    font-family: var(--font-serif);
+    font-weight: 500;
     font-style: normal;
+    letter-spacing: 0.01em;
+  }
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    letter-spacing: 0.02em;
   }
 
   ::-webkit-scrollbar{
@@ -20,20 +95,28 @@ a.active hr{
 
   @media (max-width:640px){
     a.active{
-        background-color: black;
-        color: white;
+        background-color: var(--color-charcoal);
+        color: var(--color-ivory);
     }
   }
 
   /* Admin Styles */
 select,input,textarea{
   border: 1px solid #c2c2c2;
-  outline-color: #c586A5;
+  outline-color: var(--color-gold);
   border-radius: 4px;
 }
 
 .active{
-  background-color:#ffebf5;
-  border-color: #c586c5;
+  background-color: var(--color-beige-light);
+  border-color: var(--color-gold);
+}
+
+/* Printable invoice — isolate .printable-invoice, hide everything else */
+@media print {
+  body * { visibility: hidden; }
+  .printable-invoice, .printable-invoice * { visibility: visible; }
+  .printable-invoice { position: fixed; inset: 0; padding: 0; }
+  .no-print { display: none !important; }
 }
   

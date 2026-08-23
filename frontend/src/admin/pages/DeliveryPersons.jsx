@@ -75,7 +75,7 @@ const DeliveryPersons = ({ token }) => {
                 <h2 className="text-xl font-semibold text-gray-800">Delivery Persons</h2>
                 <button
                     onClick={() => setShowForm(!showForm)}
-                    className="bg-black text-white px-4 py-2 text-sm rounded hover:bg-gray-800 transition"
+                    className="bg-green-700 text-white px-4 py-2 text-sm rounded-full hover:bg-green-800 transition cursor-pointer"
                 >
                     {showForm ? 'Cancel' : '+ Add Delivery Person'}
                 </button>
@@ -128,7 +128,7 @@ const DeliveryPersons = ({ token }) => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="bg-black text-white px-6 py-2 rounded text-sm hover:bg-gray-800 disabled:opacity-50"
+                            className="bg-green-700 text-white px-6 py-2 rounded-full text-sm hover:bg-green-800 disabled:opacity-50 transition cursor-pointer"
                         >
                             {loading ? 'Adding...' : 'Add Delivery Person'}
                         </button>

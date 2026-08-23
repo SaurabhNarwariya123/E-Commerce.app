@@ -15,12 +15,17 @@ export const sendEmail = async ({ to, subject, html }) => {
         throw new Error('Email not configured. Set EMAIL_USER and EMAIL_PASS in .env')
     }
     const transporter = createTransporter()
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
         from: `"E-Commerce Store" <${process.env.EMAIL_USER}>`,
         to,
         subject,
         html
     })
+    // Gmail rejects some clearly-invalid recipients immediately at SMTP level —
+    // surface that as a failure instead of silently reporting success.
+    if (info.rejected && info.rejected.length > 0) {
+        throw new Error(`Email address rejected by mail server: ${info.rejected.join(', ')}`)
+    }
 }
 
 export const sendOTPEmail = async (to, otp, orderId) => {
@@ -68,6 +73,34 @@ export const sendCancelOTPEmail = async (to, otp, orderId) => {
         </div>
     `
     await sendEmail({ to, subject: 'Order Cancellation OTP', html })
+}
+
+export const sendRegistrationOTPEmail = async (to, otp) => {
+    const html = `
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;border:1px solid #eee;border-radius:8px;padding:32px;">
+            <h2 style="color:#333;margin-bottom:8px;">Verify Your Email</h2>
+            <p style="color:#555;">Welcome! Use the OTP below to verify your email and activate your account.</p>
+            <div style="background:#f4f4f4;border-radius:6px;padding:20px;text-align:center;margin:24px 0;">
+                <span style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#4f46e5;">${otp}</span>
+            </div>
+            <p style="color:#888;font-size:13px;">This OTP is valid for <strong>10 minutes</strong>. Do not share it with anyone.</p>
+        </div>
+    `
+    await sendEmail({ to, subject: 'Verify Your Email — OTP', html })
+}
+
+export const sendPasswordResetOTPEmail = async (to, otp) => {
+    const html = `
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;border:1px solid #eee;border-radius:8px;padding:32px;">
+            <h2 style="color:#c53030;margin-bottom:8px;">Reset Your Password</h2>
+            <p style="color:#555;">You requested to reset your password. Use the OTP below to continue:</p>
+            <div style="background:#fff5f5;border:2px solid #feb2b2;border-radius:6px;padding:20px;text-align:center;margin:24px 0;">
+                <span style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#c53030;">${otp}</span>
+            </div>
+            <p style="color:#888;font-size:13px;">This OTP is valid for <strong>10 minutes</strong>. If you did not request this, ignore this email.</p>
+        </div>
+    `
+    await sendEmail({ to, subject: 'Password Reset OTP', html })
 }
 
 export const sendOrderStatusEmail = async (to, status, orderId) => {

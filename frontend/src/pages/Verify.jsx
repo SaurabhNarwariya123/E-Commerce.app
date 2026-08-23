@@ -37,7 +37,12 @@ const Verify = () => {
     }
   }, [token, success, orderId])
 
-  return <div>Verifying payment...</div>
+  return (
+    <div className='flex flex-col items-center justify-center gap-4 min-h-[50vh]'>
+      <div className='animate-spin w-8 h-8 border-4 border-beige border-t-gold rounded-full'></div>
+      <p className='text-sm text-gray-500'>Verifying your payment...</p>
+    </div>
+  )
 }
 
 export default Verify

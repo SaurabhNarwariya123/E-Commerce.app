@@ -6,10 +6,12 @@ import Contact from './pages/Contact'
 import Product from './pages/Product'
 import Cart from './pages/Cart'
 import Login from './pages/Login'
+import ForgotPassword from './pages/ForgotPassword'
 import PlaceOrder from './pages/PlaceOrder'
 import Order from './pages/Orders'
 import OrderTracking from './pages/OrderTracking'
 import Navbar from './components/Navbar'
+import PromoBanner from './components/PromoBanner'
 import Collection from './pages/Collection'
 import Footer from './components/Footer'
 import SearchBar from './components/SearchBar'
@@ -20,7 +22,13 @@ import Verify from './pages/Verify'
 import AdminApp from './admin/App'
 import ProtectedRoute from './components/ProtectedRoute'
 import DeliveryPortal from './pages/DeliveryPortal'
+import MaisonAure from './pages/MaisonAure'
 import Profile from './pages/Profile'
+import Wishlist from './pages/Wishlist'
+import FAQ from './pages/FAQ'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsAndConditions from './pages/TermsAndConditions'
+import ReturnPolicy from './pages/ReturnPolicy'
 
 const App = () => {
   // const [showAIChat, setShowAIChat] = useState(false);
@@ -30,7 +38,10 @@ const App = () => {
     <Routes>
       <Route path='/admin/*' element={<AdminApp/>}/>
       <Route path='/delivery' element={<DeliveryPortal/>}/>
+      <Route path='/maison-aure' element={<MaisonAure/>}/>
       <Route path='/*' element={
+        <>
+        <PromoBanner/>
         <div className = 'px-4 sm:px-[5vw] md:px[7vw] lg:px-[9vw]'>
           <ToastContainer/>
            <CartSidebar/>
@@ -46,12 +57,18 @@ const App = () => {
              <Route path='/product/:productId' element = {<Product/>}/>
              <Route path='/cart' element = {<Cart/>}/>
              <Route path='/login' element = {<Login/>}/>
+             <Route path='/forgot-password' element = {<ForgotPassword/>}/>
              <Route path='/place-order' element = {<ProtectedRoute element={<PlaceOrder/>}/>}/>
              <Route path='/orders' element = {<Order/>}/>
              <Route path='/orders/:orderId' element = {<OrderTracking/>}/>
              <Route path='/profile' element = {<ProtectedRoute element={<Profile/>}/>}/>
+             <Route path='/wishlist' element = {<ProtectedRoute element={<Wishlist/>}/>}/>
+             <Route path='/faq' element = {<FAQ/>}/>
+             <Route path='/privacy-policy' element = {<PrivacyPolicy/>}/>
+             <Route path='/terms-and-conditions' element = {<TermsAndConditions/>}/>
+             <Route path='/return-policy' element = {<ReturnPolicy/>}/>
              <Route path='/verify' element = {<Verify/>}/>
-            </Routes>  
+            </Routes>
             <Footer/>
 
             {/* AI Chat - Commented Out
@@ -74,8 +91,9 @@ const App = () => {
                 )}
               </>
             )}
-            */}      
+            */}
           </div>
+        </>
       }/>
     </Routes>
   )

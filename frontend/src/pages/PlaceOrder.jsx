@@ -3,6 +3,9 @@ import Title from '../components/Title'
 import { CartTotal } from '../components/CartTotal'
 import { assets } from '../assets/assets'
 import { ShopContext } from '../context/ShopContext'
+import { reverseGeocode } from '../utils/geocoding'
+import Button from '../components/ui/Button'
+import Card from '../components/ui/Card'
 import axios from 'axios';
 import { toast } from 'react-toastify'
 
@@ -11,42 +14,42 @@ const OrderConfirmationModal = ({ isOpen, orderData, onClose }) => {
   if (!isOpen || !orderData) return null;
 
   return (
-    <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4'>
+    <div className='fixed inset-0 bg-charcoal/60 flex items-center justify-center z-50 px-4'>
       <div className='bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl'>
         <div className='text-center'>
           {/* Success Icon */}
           <div className='mb-3 flex justify-center'>
-            <div className='bg-green-100 rounded-full p-3'>
-              <svg className='w-7 h-7 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
+            <div className='bg-beige-light rounded-full p-3'>
+              <svg className='w-7 h-7 text-gold-dark' fill='currentColor' viewBox='0 0 20 20'>
                 <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
               </svg>
             </div>
           </div>
 
-          <h2 className='text-xl font-bold text-gray-800 mb-1'>Order Confirmed!</h2>
+          <h2 className='prata-regular text-xl text-charcoal mb-1'>Order Confirmed!</h2>
           <p className='text-sm text-gray-500 mb-4'>Your order has been placed successfully</p>
 
           {/* Compact order details */}
-          <div className='bg-gray-50 rounded-xl p-4 mb-4 text-left space-y-2 text-sm'>
+          <div className='bg-beige-light/60 rounded-xl p-4 mb-4 text-left space-y-2 text-sm'>
             <div className='flex justify-between'>
               <span className='text-gray-500'>Order ID</span>
-              <span className='font-mono font-bold text-gray-800'>{orderData.orderId?.slice(-8).toUpperCase()}</span>
+              <span className='font-mono font-bold text-charcoal'>{orderData.orderId?.slice(-8).toUpperCase()}</span>
             </div>
             <div className='flex justify-between'>
               <span className='text-gray-500'>Amount</span>
-              <span className='font-bold text-gray-800'>₹{orderData.amount}</span>
+              <span className='font-bold text-charcoal'>₹{orderData.amount}</span>
             </div>
             <div className='flex justify-between'>
               <span className='text-gray-500'>Items</span>
-              <span className='font-semibold text-gray-800'>{orderData.itemCount} item(s)</span>
+              <span className='font-semibold text-charcoal'>{orderData.itemCount} item(s)</span>
             </div>
             <div className='flex justify-between'>
               <span className='text-gray-500'>Payment</span>
-              <span className='font-semibold text-orange-600'>Cash on Delivery</span>
+              <span className='font-semibold text-gold-dark'>Cash on Delivery</span>
             </div>
-            <div className='pt-2 border-t border-gray-200'>
+            <div className='pt-2 border-t border-beige'>
               <p className='text-gray-500 mb-0.5'>Delivery to</p>
-              <p className='font-medium text-gray-800'>
+              <p className='font-medium text-charcoal'>
                 {orderData.address?.firstName} {orderData.address?.lastName} · {orderData.address?.phone}
               </p>
               <p className='text-gray-500 text-xs mt-0.5'>
@@ -55,11 +58,9 @@ const OrderConfirmationModal = ({ isOpen, orderData, onClose }) => {
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className='w-full bg-black text-white py-3 px-4 rounded-xl font-semibold hover:bg-gray-900 transition'>
+          <Button variant='primary' size='lg' className='w-full' onClick={onClose}>
             View My Orders
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -73,17 +74,22 @@ const PlaceOrder = () => {
     const [confirmationData, setConfirmationData] = useState(null);
     const [savedAddresses, setSavedAddresses] = useState([])
     const [selectedAddrId, setSelectedAddrId] = useState(null)
-    const {navigate ,backendUrl, token , cartItems, setCartItems,getCartAmount,delivery_fee,products} = useContext(ShopContext);
+    const [locationStatus, setLocationStatus] = useState('idle') // idle | loading | success | denied | error
+    const [isGift, setIsGift] = useState(false)
+    const [giftMessage, setGiftMessage] = useState('')
+    const [appliedCoupon, setAppliedCoupon] = useState(null) // { code, discount }
+    const {navigate ,backendUrl, token , cartItems, setCartItems,getCartAmount,getDeliveryFee,products} = useContext(ShopContext);
     const[formData,setFormData] = useState({
        firstName:'',
        lastName:'',
-       email:'',
        street:'',
        city:'',
        state:'',
        zipcode:'',
        country:'',
-       phone:''
+       phone:'',
+       lat: null,
+       lng: null,
     })
 
     // Load saved addresses
@@ -118,6 +124,58 @@ const PlaceOrder = () => {
        setSelectedAddrId(null) // user is editing manually
        setFormData(data => ({...data,[name]:value}))
      }
+
+    // ── Share Location: capture GPS position → reverse-geocode → auto-fill address ──
+    const shareLocation = () => {
+        if (!navigator.geolocation) {
+            setLocationStatus('error')
+            toast.error('Geolocation is not supported by your browser')
+            return
+        }
+
+        setLocationStatus('loading')
+
+        // Some browsers/embedded webviews never invoke either geolocation callback
+        // (e.g. blocked by a Permissions-Policy) — guard with our own timeout so the
+        // button never gets stuck on "Locating..." with no feedback.
+        let settled = false
+        const safetyTimer = setTimeout(() => {
+            if (settled) return
+            settled = true
+            setLocationStatus('error')
+            toast.error('Location request timed out. Please check your browser location permission and try again.')
+        }, 15000)
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                if (settled) return
+                settled = true
+                clearTimeout(safetyTimer)
+                const { latitude, longitude } = position.coords
+                try {
+                    const address = await reverseGeocode(latitude, longitude)
+                    setSelectedAddrId(null)
+                    setFormData(f => ({ ...f, ...address, lat: latitude, lng: longitude }))
+                    setLocationStatus('success')
+                    toast.success('Location detected — address filled in below')
+                } catch {
+                    setLocationStatus('error')
+                    toast.error('Got your location, but could not resolve an address from it. Please fill it in manually.')
+                }
+            },
+            (error) => {
+                if (settled) return
+                settled = true
+                clearTimeout(safetyTimer)
+                setLocationStatus(error.code === 1 ? 'denied' : 'error')
+                if (error.code !== 1) {
+                    toast.error(error.message || 'Could not detect your location. Please try again or enter it manually.')
+                }
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        )
+    }
+
        const initPay = (order)=>{
         const options = {
            key:import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -168,7 +226,7 @@ const PlaceOrder = () => {
         }
 
         // ✅ Validate all required fields
-        const requiredFields = ['firstName', 'lastName', 'email', 'street', 'city', 'state', 'zipcode', 'country'];
+        const requiredFields = ['firstName', 'lastName', 'street', 'city', 'state', 'zipcode', 'country'];
         for (let field of requiredFields) {
           if (!formData[field]) {
             toast.error(`❌ Please fill in ${field}`);
@@ -180,7 +238,7 @@ const PlaceOrder = () => {
         for(const items in cartItems) {
            for ( const item in cartItems[items]){
              if(cartItems[items][item] > 0) {
-                  const itemInfo = structuredClone(products.find(product => product._id === items)) 
+                  const itemInfo = structuredClone(products.find(product => product._id === items))
               if(itemInfo){
                itemInfo.size = item
                itemInfo.quantity = cartItems[items][item]
@@ -195,10 +253,15 @@ const PlaceOrder = () => {
           return;
         }
 
+         const discount = appliedCoupon?.discount || 0
          let orderData =  {
            address:formData,
            items:orderItems,
-           amount:getCartAmount() + delivery_fee
+           amount:getCartAmount() + getDeliveryFee() - discount,
+           isGift,
+           giftMessage: isGift ? giftMessage : '',
+           couponCode: appliedCoupon?.code,
+           discountAmount: discount,
          }
 
          switch(method){
@@ -218,7 +281,7 @@ const PlaceOrder = () => {
                 else{
                     toast.error('❌ ' + (response.data.message || 'Failed to place order'));
                 }
-                
+
               break;
 
                case 'stripe':
@@ -247,10 +310,10 @@ const PlaceOrder = () => {
                 break;
 
          }
-        
+
        } catch (error) {
            console.error('Order Error:', error);
-           
+
            // ✅ Handle specific 401 error (Not Authorized)
            if (error.response?.status === 401) {
              toast.error('❌ Session expired. Please login again');
@@ -264,10 +327,10 @@ const PlaceOrder = () => {
        }
 
     }
-      
+
   return (
     <>
-      <form  onSubmit = {onSubmitHandler} className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'>
+      <form  onSubmit = {onSubmitHandler} className='flex flex-col sm:flex-row justify-between gap-10 pt-5 sm:pt-14 min-h-[80vh] border-t border-beige'>
 
       {/*  -------------------------   left Side ------------------- */}
        <div className='flex flex-col gap-4 w-full sm:max-w-[480px]'>
@@ -275,6 +338,44 @@ const PlaceOrder = () => {
          <div className='text-xl sm:text-2xl my-3'>
           <Title text1={'DELIVERY'} text2={'INFORMATION'}/>
          </div>
+
+         {/* ── Share Location (moved to the top) ── */}
+         <Card hover={false} className='p-4 bg-beige-light/50'>
+             <div className='flex items-center justify-between gap-3'>
+                 <div>
+                     <p className='text-sm font-semibold text-charcoal'>📍 Use your current location</p>
+                     <p className='text-xs text-gray-500 mt-0.5'>We'll auto-fill your address below</p>
+                 </div>
+                 <Button
+                     type='button'
+                     variant='outline'
+                     size='sm'
+                     onClick={shareLocation}
+                     disabled={locationStatus === 'loading'}
+                 >
+                     {locationStatus === 'loading' ? 'Locating...' : locationStatus === 'success' ? 'Located ✓' : 'Share Location'}
+                 </Button>
+             </div>
+
+             {locationStatus === 'denied' && (
+                 <div className='mt-3 pt-3 border-t border-beige flex items-center justify-between gap-3'>
+                     <p className='text-xs text-gray-600'>
+                         We couldn't access your location — you can still enter your address manually below, or try again.
+                     </p>
+                     <Button type='button' variant='ghost' size='sm' onClick={shareLocation} className='shrink-0'>
+                         Retry Location
+                     </Button>
+                 </div>
+             )}
+             {locationStatus === 'error' && (
+                 <div className='mt-3 pt-3 border-t border-beige flex items-center justify-between gap-3'>
+                     <p className='text-xs text-gray-600'>Something went wrong while detecting your location.</p>
+                     <Button type='button' variant='ghost' size='sm' onClick={shareLocation} className='shrink-0'>
+                         Retry Location
+                     </Button>
+                 </div>
+             )}
+         </Card>
 
          {/* ── Saved Addresses ── */}
          {savedAddresses.length > 0 && (
@@ -286,14 +387,14 @@ const PlaceOrder = () => {
                      (() => {
                          const addr = savedAddresses.find(a => a._id === selectedAddrId)
                          return addr ? (
-                             <div className='border border-black bg-gray-50 rounded-lg px-4 py-3 flex items-start justify-between gap-3'>
+                             <div className='border border-gold bg-beige-light/40 rounded-xl px-4 py-3 flex items-start justify-between gap-3'>
                                  <div className='flex items-start gap-2 min-w-0'>
                                      <span className='text-base mt-0.5 shrink-0'>
                                          {addr.label === 'Work' ? '💼' : addr.label === 'Other' ? '📍' : '🏠'}
                                      </span>
                                      <div className='min-w-0'>
-                                         <p className='text-xs font-semibold text-gray-700 uppercase tracking-wide'>{addr.label}</p>
-                                         <p className='text-sm text-gray-700 font-medium'>{addr.firstName} {addr.lastName}</p>
+                                         <p className='text-xs font-semibold text-charcoal uppercase tracking-wide'>{addr.label}</p>
+                                         <p className='text-sm text-charcoal font-medium'>{addr.firstName} {addr.lastName}</p>
                                          <p className='text-sm text-gray-500 truncate'>{addr.street}, {addr.city}{addr.state ? `, ${addr.state}` : ''} {addr.zipcode}</p>
                                          {addr.phone && <p className='text-xs text-gray-400 mt-0.5'>📞 {addr.phone}</p>}
                                      </div>
@@ -301,7 +402,7 @@ const PlaceOrder = () => {
                                  <button
                                      type='button'
                                      onClick={() => setSelectedAddrId(null)}
-                                     className='text-xs text-gray-500 underline hover:text-black shrink-0 mt-1'
+                                     className='text-xs text-gray-500 underline hover:text-charcoal shrink-0 mt-1'
                                  >
                                      Change
                                  </button>
@@ -316,21 +417,21 @@ const PlaceOrder = () => {
                                  <div
                                      key={addr._id}
                                      onClick={() => applyAddress(addr)}
-                                     className='cursor-pointer border border-gray-200 hover:border-gray-400 rounded-lg px-4 py-3 flex items-start justify-between gap-3 transition-all'
+                                     className='cursor-pointer border border-beige hover:border-gold rounded-xl px-4 py-3 flex items-start justify-between gap-3 transition-all duration-200'
                                  >
                                      <div className='flex items-start gap-2 min-w-0'>
                                          <span className='text-base mt-0.5 shrink-0'>
                                              {addr.label === 'Work' ? '💼' : addr.label === 'Other' ? '📍' : '🏠'}
                                          </span>
                                          <div className='min-w-0'>
-                                             <p className='text-xs font-semibold text-gray-700 uppercase tracking-wide'>{addr.label}</p>
+                                             <p className='text-xs font-semibold text-charcoal uppercase tracking-wide'>{addr.label}</p>
                                              <p className='text-sm text-gray-600 truncate'>
                                                  {addr.firstName} {addr.lastName} · {addr.street}, {addr.city}
                                              </p>
                                              {addr.phone && <p className='text-xs text-gray-400'>{addr.phone}</p>}
                                          </div>
                                      </div>
-                                     <span className='text-xs text-gray-400 shrink-0'>Use</span>
+                                     <span className='text-xs text-gold-dark shrink-0'>Use</span>
                                  </div>
                              ))}
                          </div>
@@ -344,48 +445,34 @@ const PlaceOrder = () => {
          {!selectedAddrId && (
              <>
                  <div className='flex gap-3'>
-                     <input required onChange={onChangeHandler} name='firstName' value={formData.firstName} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type='text' placeholder='First Name' />
-                     <input required onChange={onChangeHandler} name='lastName'  value={formData.lastName}  className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type='text' placeholder='Last Name' />
+                     <input required onChange={onChangeHandler} name='firstName' value={formData.firstName} className='border border-beige rounded-lg py-2 px-3.5 w-full focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition' type='text' placeholder='First Name' />
+                     <input required onChange={onChangeHandler} name='lastName'  value={formData.lastName}  className='border border-beige rounded-lg py-2 px-3.5 w-full focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition' type='text' placeholder='Last Name' />
                  </div>
-                 <input required onChange={onChangeHandler} name='email'  value={formData.email}  className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type='email' placeholder='Email address' />
-                 <input required onChange={onChangeHandler} name='street' value={formData.street} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type='text'  placeholder='Street' />
+                 <input required onChange={onChangeHandler} name='street' value={formData.street} className='border border-beige rounded-lg py-2 px-3.5 w-full focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition' type='text'  placeholder='Street' />
                  <div className='flex gap-3'>
-                     <input required onChange={onChangeHandler} name='city'  value={formData.city}  className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type='text' placeholder='City' />
-                     <input required onChange={onChangeHandler} name='state' value={formData.state} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type='text' placeholder='State' />
+                     <input required onChange={onChangeHandler} name='city'  value={formData.city}  className='border border-beige rounded-lg py-2 px-3.5 w-full focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition' type='text' placeholder='City' />
+                     <input required onChange={onChangeHandler} name='state' value={formData.state} className='border border-beige rounded-lg py-2 px-3.5 w-full focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition' type='text' placeholder='State' />
                  </div>
                  <div className='flex gap-3'>
-                     <input required onChange={onChangeHandler} name='zipcode' value={formData.zipcode} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type='number' placeholder='Zip Code' />
-                     <input required onChange={onChangeHandler} name='country' value={formData.country} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type='text'   placeholder='Country' />
+                     <input required onChange={onChangeHandler} name='zipcode' value={formData.zipcode} className='border border-beige rounded-lg py-2 px-3.5 w-full focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition' type='number' placeholder='Zip Code' />
+                     <input required onChange={onChangeHandler} name='country' value={formData.country} className='border border-beige rounded-lg py-2 px-3.5 w-full focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition' type='text'   placeholder='Country' />
                  </div>
-                 <div className='bg-green-50 border border-green-200 rounded p-3'>
-                     <label className='text-sm font-semibold text-green-800 mb-2 block'>📱 Phone Number (Required)</label>
+                 <div className='bg-beige-light/60 border border-beige rounded-lg p-3'>
+                     <label className='text-sm font-semibold text-charcoal mb-2 block'>📱 Phone Number (Required)</label>
                      <input
                          required
                          onChange={onChangeHandler}
                          name='phone'
                          value={formData.phone}
-                         className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+                         className='border border-beige rounded-lg py-2 px-3.5 w-full focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition'
                          type='tel'
                          placeholder='10-digit phone number'
                          maxLength='10'
                          pattern='[0-9]{10}'
                      />
-                     <p className='text-xs text-green-700 mt-2'>✓ We will send SMS order confirmation to this number</p>
+                     <p className='text-xs text-gray-500 mt-2'>✓ We will send SMS order confirmation to this number</p>
                  </div>
              </>
-         )}
-
-         {/* Email always required — shown separately when address is pre-filled */}
-         {selectedAddrId && (
-             <input
-                 required
-                 onChange={onChangeHandler}
-                 name='email'
-                 value={formData.email}
-                 className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
-                 type='email'
-                 placeholder='Email address for order confirmation'
-             />
          )}
        </div>
 
@@ -393,33 +480,55 @@ const PlaceOrder = () => {
 
        <div className ='mt-8'>
          <div className='mt-8 min-w-80'>
-          <CartTotal/>
+          <CartTotal onCouponChange={setAppliedCoupon}/>
 
          </div>
+
+         <Card hover={false} className='mt-6 p-4'>
+             <label className='flex items-center gap-3 cursor-pointer'>
+                 <input
+                     type='checkbox'
+                     checked={isGift}
+                     onChange={(e) => setIsGift(e.target.checked)}
+                     className='w-4 h-4 accent-gold-dark cursor-pointer'
+                 />
+                 <span className='text-sm font-semibold text-charcoal'>🎁 This is a gift</span>
+             </label>
+             {isGift && (
+                 <textarea
+                     value={giftMessage}
+                     onChange={(e) => setGiftMessage(e.target.value)}
+                     placeholder='Add a gift message (optional)'
+                     maxLength={200}
+                     rows={3}
+                     className='mt-3 w-full border border-beige rounded-lg py-2 px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition resize-none'
+                 />
+             )}
+         </Card>
 
          <div className='mt-12'>
           <Title text1={'PAYMENT'} text2={'METHOD'}/>
 
           {/*   -----------------payment Method seletion---------------- */}
           <div className='flex gap-3 flex-col lg:flex-row' >
-                  <div onClick={()=>setMethod('stripe')} className='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
-                    <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'stripe' ? 'bg-green-400' : ''}`}></p>
+                  <div onClick={()=>setMethod('stripe')} className={`flex items-center gap-3 border rounded-xl p-2 px-3 cursor-pointer transition-all duration-200 ${method === 'stripe' ? 'border-gold bg-beige-light/40' : 'border-beige'}`}>
+                    <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'stripe' ? 'bg-gold border-gold' : 'border-gray-300'}`}></p>
                     <img className='h-5 mx-4' src={assets.stripe_logo} alt="" />
                   </div>
 
-                  <div  onClick={()=>setMethod('razorpay')}className='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
-                    <p className={`min-w-3.5 h-3.5 border rounded-full  ${method === 'razorpay' ? 'bg-green-400' : ''}`}></p>
+                  <div  onClick={()=>setMethod('razorpay')} className={`flex items-center gap-3 border rounded-xl p-2 px-3 cursor-pointer transition-all duration-200 ${method === 'razorpay' ? 'border-gold bg-beige-light/40' : 'border-beige'}`}>
+                    <p className={`min-w-3.5 h-3.5 border rounded-full  ${method === 'razorpay' ? 'bg-gold border-gold' : 'border-gray-300'}`}></p>
                     <img className='h-5 mx-4' src={assets.razorpay_logo} alt="" />
                   </div>
 
-                  <div onClick={()=>setMethod('cod')} className ='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
-                    <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'cod' ? 'bg-green-400' : ''}`}></p>
-                   <p className='text-gray-500 text-sm font-medium mx-4'> CASH ON DELIVERY</p>
+                  <div onClick={()=>setMethod('cod')} className={`flex items-center gap-3 border rounded-xl p-2 px-3 cursor-pointer transition-all duration-200 ${method === 'cod' ? 'border-gold bg-beige-light/40' : 'border-beige'}`}>
+                    <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'cod' ? 'bg-gold border-gold' : 'border-gray-300'}`}></p>
+                   <p className='text-gray-600 text-sm font-medium mx-4'> CASH ON DELIVERY</p>
                   </div>
           </div>
-           
-              <div className='w-full text-end mt-8'> 
-              <button type='submit' className='bg-black text-white px-16 py-3 text-sm cursor-pointer hover:bg-gray-800 transition'> PLACE ORDER</button>
+
+              <div className='w-full text-end mt-8'>
+              <Button type='submit' variant='gold' size='lg'>PLACE ORDER</Button>
              </div>
 
          </div>
@@ -427,8 +536,8 @@ const PlaceOrder = () => {
     </form>
 
     {/* ✅ Order Confirmation Modal Pop-up */}
-    <OrderConfirmationModal 
-      isOpen={showConfirmation} 
+    <OrderConfirmationModal
+      isOpen={showConfirmation}
       orderData={confirmationData}
       onClose={() => {
         setShowConfirmation(false);

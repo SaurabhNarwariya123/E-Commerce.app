@@ -80,7 +80,7 @@ const OrderTracking = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="animate-spin w-8 h-8 border-4 border-gray-200 border-t-gray-700 rounded-full"></div>
+                <div className="animate-spin w-8 h-8 border-4 border-beige border-t-gold rounded-full"></div>
             </div>
         )
     }
@@ -89,7 +89,7 @@ const OrderTracking = () => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-400 gap-3">
                 <p>Order not found</p>
-                <button onClick={() => navigate('/orders')} className="text-sm text-indigo-600 underline">Back to Orders</button>
+                <button onClick={() => navigate('/orders')} className="text-sm text-gold-dark underline">Back to Orders</button>
             </div>
         )
     }
@@ -108,17 +108,17 @@ const OrderTracking = () => {
     const otpDigits = deliveryOtp ? deliveryOtp.split('') : []
 
     return (
-        <div className="border-t pt-10 pb-16 max-w-5xl mx-auto">
+        <div className="border-t border-beige pt-10 pb-16 max-w-5xl mx-auto">
 
             {/* Back link */}
             <button
                 onClick={() => navigate('/orders')}
-                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 mb-6 transition"
+                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-charcoal mb-6 transition"
             >
                 ← Back to Orders
             </button>
 
-            <h2 className="text-xl font-semibold text-gray-900 mb-1">Order #{order._id.slice(-8).toUpperCase()}</h2>
+            <h2 className="text-xl prata-regular text-charcoal mb-1">Order #{order._id.slice(-8).toUpperCase()}</h2>
             <p className="text-sm text-gray-400 mb-6">
                 {new Date(order.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 &nbsp;·&nbsp;{order.paymentMethod}
@@ -151,7 +151,7 @@ const OrderTracking = () => {
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5 mb-6">
 
                 {/* Google Maps iframe */}
-                <div className="rounded-xl overflow-hidden border border-gray-200 h-[340px] lg:h-[400px] relative">
+                <div className="rounded-2xl overflow-hidden border border-beige h-85 lg:h-100 relative">
                     <iframe
                         title="Delivery Location"
                         src={mapUrls.embed}
@@ -168,7 +168,7 @@ const OrderTracking = () => {
                             href={mapUrls.open}
                             target="_blank"
                             rel="noreferrer"
-                            className="bg-white text-gray-700 text-xs px-3 py-1.5 rounded-full shadow-md border border-gray-200 hover:bg-gray-50 flex items-center gap-1 transition"
+                            className="bg-white text-gray-700 text-xs px-3 py-1.5 rounded-full shadow-md border border-beige hover:bg-beige-light flex items-center gap-1 transition"
                         >
                             🗺 Open in Maps
                         </a>
@@ -177,7 +177,7 @@ const OrderTracking = () => {
                                 href={deliveryMapUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="bg-green-600 text-white text-xs px-3 py-1.5 rounded-full shadow-md hover:bg-green-700 flex items-center gap-1 transition"
+                                className="bg-gold text-white text-xs px-3 py-1.5 rounded-full shadow-md hover:bg-gold-dark flex items-center gap-1 transition"
                             >
                                 📍 Live Location
                             </a>
@@ -189,8 +189,8 @@ const OrderTracking = () => {
                 <div className="space-y-4">
 
                     {/* Delivery Address */}
-                    <div className="border border-gray-200 rounded-xl p-4">
-                        <h3 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-1.5">
+                    <div className="border border-beige rounded-2xl p-4">
+                        <h3 className="text-sm font-semibold text-charcoal mb-2 flex items-center gap-1.5">
                             <span>📍</span> Delivery Address
                         </h3>
                         <p className="text-xs text-gray-500 font-medium">
@@ -207,15 +207,15 @@ const OrderTracking = () => {
                             href={mapUrls.open}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1 mt-3 text-xs text-indigo-600 hover:underline"
+                            className="inline-flex items-center gap-1 mt-3 text-xs text-gold-dark hover:underline"
                         >
                             View on Google Maps →
                         </a>
                     </div>
 
                     {/* Items + Totals */}
-                    <div className="border border-gray-200 rounded-xl p-4">
-                        <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                    <div className="border border-beige rounded-2xl p-4">
+                        <h3 className="text-sm font-semibold text-charcoal mb-3">
                             Items ({order.items.length})
                         </h3>
                         <div className="space-y-2 mb-4">
@@ -229,23 +229,23 @@ const OrderTracking = () => {
                                             {item.name} <span className="text-gray-400">x{item.quantity}</span>
                                         </span>
                                     </div>
-                                    <span className="text-gray-800 font-medium shrink-0">
+                                    <span className="text-charcoal font-medium shrink-0">
                                         {currency}{(item.price * item.quantity).toFixed(2)}
                                     </span>
                                 </div>
                             ))}
                         </div>
-                        <div className="border-t border-gray-100 pt-3 space-y-1.5 text-sm">
+                        <div className="border-t border-beige pt-3 space-y-1.5 text-sm">
                             <div className="flex justify-between text-gray-500">
                                 <span>Subtotal</span><span>{currency}{subtotal.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between text-gray-500">
-                                <span>Delivery</span><span className="text-green-600 font-medium">Free</span>
+                                <span>Delivery</span><span className="text-gold-dark font-medium">Free</span>
                             </div>
                             <div className="flex justify-between text-gray-500">
                                 <span>Tax</span><span>{currency}{tax.toFixed(2)}</span>
                             </div>
-                            <div className="flex justify-between font-semibold text-gray-900 pt-1.5 border-t border-gray-100">
+                            <div className="flex justify-between font-semibold text-charcoal pt-1.5 border-t border-beige">
                                 <span>Total</span><span>{currency}{order.amount.toFixed(2)}</span>
                             </div>
                         </div>
@@ -253,13 +253,13 @@ const OrderTracking = () => {
 
                     {/* Delivery person badge */}
                     {order.deliveryPersonName && (
-                        <div className="border border-gray-200 rounded-xl p-3 flex items-center gap-2">
-                            <div className="w-7 h-7 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 text-xs font-bold shrink-0">
+                        <div className="border border-beige rounded-2xl p-3 flex items-center gap-2">
+                            <div className="w-7 h-7 bg-gold/15 rounded-full flex items-center justify-center text-gold-dark text-xs font-bold shrink-0">
                                 {order.deliveryPersonName[0].toUpperCase()}
                             </div>
                             <div>
                                 <p className="text-xs text-gray-400">Delivery Partner</p>
-                                <p className="text-sm font-medium text-gray-800">{order.deliveryPersonName}</p>
+                                <p className="text-sm font-medium text-charcoal">{order.deliveryPersonName}</p>
                             </div>
                         </div>
                     )}
@@ -267,11 +267,11 @@ const OrderTracking = () => {
             </div>
 
             {/* ── Delivery Progress Timeline ── */}
-            <div className="border border-gray-200 rounded-xl p-5">
-                <h3 className="font-semibold text-gray-800 mb-6">Delivery Progress</h3>
+            <div className="border border-beige rounded-2xl p-5">
+                <h3 className="font-semibold text-charcoal mb-6">Delivery Progress</h3>
 
                 <div className="relative">
-                    <div className="absolute left-3.75 top-4 bottom-4 w-0.5 bg-gray-200 z-0"></div>
+                    <div className="absolute left-3.75 top-4 bottom-4 w-0.5 bg-beige z-0"></div>
 
                     <div className="space-y-7">
                         {STEPS.map((step, idx) => {
@@ -285,12 +285,12 @@ const OrderTracking = () => {
                             return (
                                 <div key={step.key} className="relative flex items-start gap-4 pl-10">
                                     <div className={`absolute left-0 top-0 w-8 h-8 rounded-full flex items-center justify-center text-sm z-10 transition-all
-                                        ${active ? 'bg-[#1c3829] text-white shadow-sm' : 'bg-white border-2 border-gray-300 text-gray-400'}`}
+                                        ${active ? 'bg-[#1c3829] text-white shadow-sm' : 'bg-white border-2 border-beige text-gray-400'}`}
                                     >
                                         {step.icon}
                                     </div>
                                     <div className="pt-0.5">
-                                        <p className={`font-medium text-sm ${active ? 'text-gray-900' : 'text-gray-400'}`}>
+                                        <p className={`font-medium text-sm ${active ? 'text-charcoal' : 'text-gray-400'}`}>
                                             {step.label}
                                         </p>
                                         {active && timestamp && (

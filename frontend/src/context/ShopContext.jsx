@@ -11,12 +11,15 @@ axios.defaults.withCredentials = true;
 const ShopContextProvider = (props) => {
   const currency = "$";
   const delivery_fee = 10;
+  const freeDeliveryThreshold = 350;
   const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [showCartSidebar, setShowCartSidebar] = useState(false);
   const [cartItems, setCartItems] = useState({});
+  const [wishlist, setWishlist] = useState([]);
   const [products, setProducts] = useState([]);
+  const [activeCoupons, setActiveCoupons] = useState([]);
   const [token, setToken] = useState(localStorage.getItem('userId') ? 'logged_in' : '');
   const [userId, setUserId] = useState(localStorage.getItem('userId') || '');
   const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
@@ -140,6 +143,13 @@ const ShopContextProvider = (props) => {
     return totalAmount;
   };
 
+  // 0 delivery fee once the cart amount reaches the free-delivery threshold
+  const getDeliveryFee = () => {
+    const amount = getCartAmount();
+    if (amount === 0) return 0;
+    return amount >= freeDeliveryThreshold ? 0 : delivery_fee;
+  };
+
   const getProductData = async () => {
     try {
       const response = await axios.get(backendUrl + "/api/product/list");
@@ -151,6 +161,64 @@ const ShopContextProvider = (props) => {
     } catch (error) {
       console.log(error);
       toast.error(error.message);
+    }
+  }
+
+  const getActiveCoupons = async () => {
+    try {
+      const response = await axios.get(backendUrl + '/api/coupon/active');
+      if (response.data.success) setActiveCoupons(response.data.coupons || []);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Best coupon-driven price for a given item price, for the "Offer Price" preview
+  // shown on product cards (mirrors the server-side calc in couponController).
+  const getBestOffer = (price) => {
+    let best = null
+    for (const c of activeCoupons) {
+      if (price < c.minOrderAmount) continue
+      let discount = c.discountType === 'percent' ? (price * c.discountValue) / 100 : c.discountValue
+      if (c.maxDiscount) discount = Math.min(discount, c.maxDiscount)
+      discount = Math.min(Math.round(discount), price)
+      if (discount <= 0) continue
+      if (!best || discount > best.discount) best = { code: c.code, discount, offerPrice: price - discount }
+    }
+    return best
+  }
+
+  //   //  -------------------- wishlist  -------------------------
+  const getWishlist = async () => {
+    try {
+      const response = await axios.post(backendUrl + '/api/user/wishlist', {});
+      if (response.data.success) setWishlist(response.data.wishlist || []);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const toggleWishlist = async (productId) => {
+    if (!token) {
+      toast.error('Please login to use your wishlist');
+      navigate('/login');
+      return;
+    }
+
+    const isWished = wishlist.includes(productId);
+    setWishlist(prev => isWished ? prev.filter(id => id !== productId) : [...prev, productId]);
+
+    try {
+      const url = backendUrl + (isWished ? '/api/user/wishlist/remove' : '/api/user/wishlist/add');
+      const response = await axios.post(url, { productId });
+      if (response.data.success) {
+        setWishlist(response.data.wishlist || []);
+        toast.success(isWished ? 'Removed from wishlist' : 'Added to wishlist');
+      }
+    } catch (error) {
+      console.log(error);
+      handleAuthError(error);
+      toast.error(error.response?.data?.message || error.message);
     }
   }
 
@@ -176,19 +244,23 @@ const ShopContextProvider = (props) => {
 
   useEffect(() => {
     getProductData();
+    getActiveCoupons();
   }, []);
 
   useEffect(() => {
     if (localStorage.getItem('userId')) {
       getUserCart();
+      getWishlist();
     }
   }, []);
 
   const value = {
-    products, currency,delivery_fee,search,
+    products, currency,delivery_fee,freeDeliveryThreshold,search,
     setSearch,showSearch,setShowSearch,showCartSidebar,setShowCartSidebar,cartItems,
-    addToCart,setCartItems,getCartCount,updateQuantity,getCartAmount,
+    addToCart,setCartItems,getCartCount,updateQuantity,getCartAmount,getDeliveryFee,
     navigate,backendUrl,setToken,token,userId,setUserId,userName,setUserName,userEmail,setUserEmail,
+    wishlist,toggleWishlist,
+    activeCoupons,getBestOffer,
   };
 
   return ( 

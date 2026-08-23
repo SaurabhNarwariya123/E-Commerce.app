@@ -5,10 +5,13 @@ import Stripe from 'stripe';
 import razorpay from 'razorpay'
 import dotenv from 'dotenv';
 import { sendOTPEmail, sendCancelOTPEmail } from '../config/email.js'
+import { validateCoupon, incrementCouponUsage } from './couponController.js'
 dotenv.config();
 
 const currency = 'inr'
 const deliveryCharge = 10
+const FREE_DELIVERY_THRESHOLD = 350
+const REWARD_RATE = 0.02 // 2% of order amount, awarded as reward points on delivery
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -39,7 +42,20 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 // ─── Place Order (COD) ────────────────────────────────────────────────────────
 const placeOrder = async (req, res) => {
     try {
-        const { userId, items, amount, address } = req.body;
+        const { userId, items, amount, address, isGift, giftMessage, couponCode, discountAmount } = req.body;
+
+        // Re-validate the coupon server-side before honoring the client-computed discount.
+        let appliedCouponCode = null
+        let appliedDiscount = 0
+        if (couponCode) {
+            const preDiscountAmount = Number(amount) + Number(discountAmount || 0)
+            const result = await validateCoupon(couponCode, preDiscountAmount)
+            if (!result.valid) {
+                return res.json({ success: false, message: result.message })
+            }
+            appliedCouponCode = result.coupon.code
+            appliedDiscount = result.discount
+        }
 
         const now = new Date()
         const orderData = {
@@ -52,6 +68,10 @@ const placeOrder = async (req, res) => {
             date: Date.now(),
             otpVerified: true,
             status: 'Order Confirmed',
+            isGift: !!isGift,
+            giftMessage: isGift ? (giftMessage || '') : '',
+            couponCode: appliedCouponCode,
+            discountAmount: appliedDiscount,
             statusHistory: [
                 { status: 'Order Placed',    timestamp: now },
                 { status: 'Order Confirmed', timestamp: now },
@@ -60,6 +80,8 @@ const placeOrder = async (req, res) => {
 
         const newOrder = new orderModel(orderData);
         await newOrder.save();
+
+        if (appliedCouponCode) await incrementCouponUsage(appliedCouponCode)
 
         await deductStock(items);
 
@@ -84,6 +106,8 @@ const placeOrder = async (req, res) => {
                                 zipcode:   String(address.zipcode || ''),
                                 country:   address.country   || '',
                                 phone:     String(address.phone   || ''),
+                                lat:       address.lat ?? null,
+                                lng:       address.lng ?? null,
                             }
                         }
                     })
@@ -166,14 +190,30 @@ const confirmCancelOrder = async (req, res) => {
 // ─── Place Order (Stripe) ─────────────────────────────────────────────────────
 const placeOrderStripe = async (req, res) => {
     try {
-        const { userId, items, amount, address } = req.body;
+        const { userId, items, amount, address, isGift, giftMessage, couponCode, discountAmount } = req.body;
         const { origin } = req.headers;
+
+        let appliedCouponCode = null
+        let appliedDiscount = 0
+        if (couponCode) {
+            const preDiscountAmount = Number(amount) + Number(discountAmount || 0)
+            const result = await validateCoupon(couponCode, preDiscountAmount)
+            if (!result.valid) {
+                return res.json({ success: false, message: result.message })
+            }
+            appliedCouponCode = result.coupon.code
+            appliedDiscount = result.discount
+        }
 
         const orderData = {
             userId, items, address, amount,
             paymentMethod: "Stripe",
             payment: false,
-            date: Date.now()
+            date: Date.now(),
+            isGift: !!isGift,
+            giftMessage: isGift ? (giftMessage || '') : '',
+            couponCode: appliedCouponCode,
+            discountAmount: appliedDiscount,
         };
 
         const newOrder = new orderModel(orderData);
@@ -188,14 +228,17 @@ const placeOrderStripe = async (req, res) => {
             quantity: item.quantity
         }))
 
-        line_items.push({
-            price_data: {
-                currency: currency,
-                product_data: { name: 'Delivery Charges' },
-                unit_amount: deliveryCharge * 100
-            },
-            quantity: 1
-        })
+        const itemsTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+        if (itemsTotal < FREE_DELIVERY_THRESHOLD) {
+            line_items.push({
+                price_data: {
+                    currency: currency,
+                    product_data: { name: 'Delivery Charges' },
+                    unit_amount: deliveryCharge * 100
+                },
+                quantity: 1
+            })
+        }
 
         const session = await stripe.checkout.sessions.create({
             success_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
@@ -218,7 +261,10 @@ const verifyStripe = async (req, res) => {
         if (success === 'true') {
             await orderModel.findByIdAndUpdate(orderId, { payment: true, otpVerified: true });
             const order = await orderModel.findById(orderId)
-            if (order) await deductStock(order.items)
+            if (order) {
+                await deductStock(order.items)
+                if (order.couponCode) await incrementCouponUsage(order.couponCode)
+            }
             await userModel.findByIdAndUpdate(userId, { cartData: {} });
             res.json({ success: true });
         } else {
@@ -234,13 +280,29 @@ const verifyStripe = async (req, res) => {
 // ─── Place Order (Razorpay) ───────────────────────────────────────────────────
 const placeOrderRazorpay = async (req, res) => {
     try {
-        const { userId, items, amount, address } = req.body;
+        const { userId, items, amount, address, isGift, giftMessage, couponCode, discountAmount } = req.body;
+
+        let appliedCouponCode = null
+        let appliedDiscount = 0
+        if (couponCode) {
+            const preDiscountAmount = Number(amount) + Number(discountAmount || 0)
+            const result = await validateCoupon(couponCode, preDiscountAmount)
+            if (!result.valid) {
+                return res.json({ success: false, message: result.message })
+            }
+            appliedCouponCode = result.coupon.code
+            appliedDiscount = result.discount
+        }
 
         const orderData = {
             userId, items, address, amount,
             paymentMethod: "Razorpay",
             payment: false,
-            date: Date.now()
+            date: Date.now(),
+            isGift: !!isGift,
+            giftMessage: isGift ? (giftMessage || '') : '',
+            couponCode: appliedCouponCode,
+            discountAmount: appliedDiscount,
         };
 
         const newOrder = new orderModel(orderData);
@@ -274,7 +336,10 @@ const verifyRazorpay = async (req, res) => {
         if (orderInfo.status === 'paid') {
             await orderModel.findByIdAndUpdate(orderInfo.receipt, { payment: true, otpVerified: true });
             const order = await orderModel.findById(orderInfo.receipt)
-            if (order) await deductStock(order.items)
+            if (order) {
+                await deductStock(order.items)
+                if (order.couponCode) await incrementCouponUsage(order.couponCode)
+            }
             await userModel.findByIdAndUpdate(userId, { cartData: {} })
             res.json({ success: true, message: 'Payment Successful' })
         } else {
@@ -314,6 +379,16 @@ const updateStatus = async (req, res) => {
     try {
         const { orderId, status } = req.body
         await orderModel.findByIdAndUpdate(orderId, { status })
+
+        if (status === 'Delivered') {
+            const order = await orderModel.findById(orderId)
+            if (order && !order.rewardPointsAwarded) {
+                const pointsEarned = Math.floor(order.amount * REWARD_RATE)
+                await userModel.findByIdAndUpdate(order.userId, { $inc: { rewardPoints: pointsEarned } })
+                await orderModel.findByIdAndUpdate(orderId, { rewardPointsAwarded: true, rewardPointsEarned: pointsEarned })
+            }
+        }
+
         res.json({ success: true, message: "Status Updated" })
     } catch (error) {
         console.log(error);

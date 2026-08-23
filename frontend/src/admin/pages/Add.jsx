@@ -18,6 +18,22 @@ const Add = ({token}) => {
     const[subCategory,setSubCategory] = useState("Topwear")
     const[bestseller,setBestseller] = useState(false)
     const[sizes,setSizes] = useState([]);
+    const[discountPercent,setDiscountPercent] = useState("")
+    const[colors,setColors] = useState([]) // [{ name, hex }]
+    const[colorName,setColorName] = useState("")
+    const[colorHex,setColorHex] = useState("#000000")
+    const[rating,setRating] = useState("")
+    const[reviewCount,setReviewCount] = useState("")
+
+    const addColor = () => {
+        if (!colorName.trim()) return
+        setColors(prev => [...prev, { name: colorName.trim(), hex: colorHex }])
+        setColorName("")
+    }
+
+    const removeColor = (index) => {
+        setColors(prev => prev.filter((_, i) => i !== index))
+    }
 
     const onSubmitHandler = async (e) =>{
         e.preventDefault();
@@ -32,6 +48,10 @@ const Add = ({token}) => {
            formData.append("subCategory",subCategory)
            formData.append("bestseller",bestseller)
            formData.append("sizes",JSON.stringify(sizes))
+           formData.append("discountPercent",discountPercent || 0)
+           formData.append("colors",JSON.stringify(colors))
+           formData.append("rating",rating)
+           formData.append("reviewCount",reviewCount || 0)
 
            image1 &&  formData.append("image1",image1)
            image2 &&  formData.append("image2",image2)
@@ -50,6 +70,10 @@ const Add = ({token}) => {
             setImage3(false)
             setImage4(false)
            setPrice('')
+           setDiscountPercent('')
+           setColors([])
+           setRating('')
+           setReviewCount('')
            }
 
            else{
@@ -122,6 +146,41 @@ const Add = ({token}) => {
                <p className='mb-2'>Product price</p>
                 <input onChange={(e)=>setPrice(e.target.value)}  value={price} className='w-full px-3 py-2 sm:w-[120px]' type="Number" placeholder='25' />
             </div>
+
+            <div>
+               <p className='mb-2'>Discount %</p>
+                <input onChange={(e)=>setDiscountPercent(e.target.value)}  value={discountPercent} className='w-full px-3 py-2 sm:w-[120px]' type="Number" min="0" max="90" placeholder='0' />
+            </div>
+
+            <div>
+               <p className='mb-2'>Rating (optional)</p>
+                <input onChange={(e)=>setRating(e.target.value)}  value={rating} className='w-full px-3 py-2 sm:w-[100px]' type="Number" min="0" max="5" step="0.1" placeholder='e.g. 4.2' />
+            </div>
+
+            <div>
+               <p className='mb-2'>Review Count</p>
+                <input onChange={(e)=>setReviewCount(e.target.value)}  value={reviewCount} className='w-full px-3 py-2 sm:w-[120px]' type="Number" min="0" placeholder='0' />
+            </div>
+        </div>
+
+        <div className='w-full'>
+           <p className='mb-2'>Colors (optional)</p>
+           <div className='flex flex-wrap items-center gap-2 mb-2'>
+              <input onChange={(e)=>setColorName(e.target.value)} value={colorName} className='px-3 py-2' type="text" placeholder='Color name e.g. Charcoal' />
+              <input onChange={(e)=>setColorHex(e.target.value)} value={colorHex} className='w-12 h-9 p-0 border rounded cursor-pointer' type="color" />
+              <button type='button' onClick={addColor} className='px-4 py-2 bg-slate-200 rounded cursor-pointer'>Add Color</button>
+           </div>
+           {colors.length > 0 && (
+             <div className='flex flex-wrap gap-2'>
+               {colors.map((c, i) => (
+                 <span key={i} className='flex items-center gap-2 px-2 py-1 border rounded-full text-sm'>
+                   <span className='w-4 h-4 rounded-full border' style={{ backgroundColor: c.hex }}></span>
+                   {c.name}
+                   <span onClick={()=>removeColor(i)} className='text-red-500 cursor-pointer'>×</span>
+                 </span>
+               ))}
+             </div>
+           )}
         </div>
         <div>
            <p className='mb-2'>Product Sizes</p>
@@ -149,7 +208,7 @@ const Add = ({token}) => {
           <input onChange={() => setBestseller(prev => !prev)} checked = {bestseller} type="checkbox"  id="bestseller" />
           <label  className = "cursor-pointer " htmlFor="bestseller">Add to bestseller</label>
         </div>
-        <button type='submit' className='w-28 py-3 mt-4 bg-black text-white rounded-xl cursor-pointer'>ADD</button>
+        <button type='submit' className='w-28 py-3 mt-4 bg-green-700 hover:bg-green-800 text-white rounded-xl cursor-pointer transition'>ADD</button>
     </form>
 
   )
