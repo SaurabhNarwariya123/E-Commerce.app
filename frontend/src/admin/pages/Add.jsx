@@ -89,127 +89,134 @@ const Add = ({token}) => {
     }
 
 
+  const labelClass = 'text-sm font-medium text-gray-700 mb-1.5 block'
+  const inputClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition'
+
   return (
-    <form onSubmit={onSubmitHandler} className = 'flex flex-col w-full items-start gap-3' action="">
-       <div>
-          <p className='mb-2'>Upload Image</p>
+    <div className='bg-white border border-gray-200 rounded-2xl p-6'>
+      <h2 className='text-xl font-semibold text-gray-800 mb-5'>Add Product</h2>
+      <form onSubmit={onSubmitHandler} className='flex flex-col w-full items-start gap-4' action="">
+         <div>
+            <p className={labelClass}>Upload Image</p>
 
-          <div className=' flex gap-2 '>
-            <label htmlFor="image1">
-              <img className='w-20 cursor-pointer' src={ !image1 ? assets.upload_area : URL.createObjectURL(image1)} alt="" />
-              <input onChange={(e)=>setImage1(e.target.files[0])} type="file" id='image1' hidden />
-           </label>
-            <label htmlFor="image2">
-              <img  className='w-20 cursor-pointer' src={!image2 ? assets.upload_area : URL.createObjectURL(image2)} alt="" />
-              <input onChange={(e)=>setImage2(e.target.files[0])} type="file" id='image2' hidden />
-            </label>
-            <label htmlFor="image3">
-              <img className='w-20 cursor-pointer'src={!image3 ? assets.upload_area : URL.createObjectURL(image3)} alt="" />
-              <input onChange={(e)=>setImage3(e.target.files[0])}  type="file" id='image3' hidden />
-            </label>
-            <label htmlFor="image4">
-              <img className='w-20 cursor-pointer' src={!image4 ? assets.upload_area : URL.createObjectURL(image4)} alt="" />
-              <input onChange={(e)=>setImage4(e.target.files[0])} type="file" id='image4' hidden />
-            </label>
+            <div className='flex gap-3'>
+              <label htmlFor="image1">
+                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-green-400 transition overflow-hidden'>
+                  <img className='w-full h-full object-cover cursor-pointer' src={ !image1 ? assets.upload_area : URL.createObjectURL(image1)} alt="" />
+                </div>
+                <input onChange={(e)=>setImage1(e.target.files[0])} type="file" id='image1' hidden />
+             </label>
+              <label htmlFor="image2">
+                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-green-400 transition overflow-hidden'>
+                  <img className='w-full h-full object-cover cursor-pointer' src={!image2 ? assets.upload_area : URL.createObjectURL(image2)} alt="" />
+                </div>
+                <input onChange={(e)=>setImage2(e.target.files[0])} type="file" id='image2' hidden />
+              </label>
+              <label htmlFor="image3">
+                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-green-400 transition overflow-hidden'>
+                  <img className='w-full h-full object-cover cursor-pointer' src={!image3 ? assets.upload_area : URL.createObjectURL(image3)} alt="" />
+                </div>
+                <input onChange={(e)=>setImage3(e.target.files[0])}  type="file" id='image3' hidden />
+              </label>
+              <label htmlFor="image4">
+                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-green-400 transition overflow-hidden'>
+                  <img className='w-full h-full object-cover cursor-pointer' src={!image4 ? assets.upload_area : URL.createObjectURL(image4)} alt="" />
+                </div>
+                <input onChange={(e)=>setImage4(e.target.files[0])} type="file" id='image4' hidden />
+              </label>
+            </div>
+         </div>
+
+         <div className='w-full max-w-125'>
+           <p className={labelClass}>Product Name</p>
+           <input onChange={(e)=>setName(e.target.value)} value={name}  className={inputClass} type="text" placeholder='Type here'  required/>
+         </div>
+          <div className='w-full max-w-125'>
+           <p className={labelClass}>Product description</p>
+           <textarea onChange={(e)=>setDescription(e.target.value)}  value={description} rows={3} className={inputClass} placeholder='Write content here'  required/>
+         </div>
+
+          <div className='flex flex-wrap gap-4 w-full'>
+              <div className='w-36'>
+                 <p className={labelClass}>Product Category</p>
+                  <select onChange={(e)=>setCategory(e.target.value)}  value={category} className={inputClass}>
+                    <option value="Men">Men</option>
+                    <option value="Women">Women</option>
+                    <option value="Kids">Kids</option>
+                  </select>
+              </div>
+
+                <div className='w-36'>
+                 <p className={labelClass}>Sub Category</p>
+                  <select onChange={(e)=>setSubCategory(e.target.value)}  value={subCategory} className={inputClass}>
+                    <option value="Topwear">Topwear</option>
+                    <option value="Bottomwear">Bottomwear</option>
+                    <option value="Winterwear">Winterwear</option>
+                  </select>
+              </div>
+
+              <div className='w-28'>
+                 <p className={labelClass}>Product price</p>
+                  <input onChange={(e)=>setPrice(e.target.value)}  value={price} className={inputClass} type="Number" placeholder='25' />
+              </div>
+
+              <div className='w-28'>
+                 <p className={labelClass}>Discount %</p>
+                  <input onChange={(e)=>setDiscountPercent(e.target.value)}  value={discountPercent} className={inputClass} type="Number" min="0" max="90" placeholder='0' />
+              </div>
+
+              <div className='w-28'>
+                 <p className={labelClass}>Rating (optional)</p>
+                  <input onChange={(e)=>setRating(e.target.value)}  value={rating} className={inputClass} type="Number" min="0" max="5" step="0.1" placeholder='e.g. 4.2' />
+              </div>
+
+              <div className='w-28'>
+                 <p className={labelClass}>Review Count</p>
+                  <input onChange={(e)=>setReviewCount(e.target.value)}  value={reviewCount} className={inputClass} type="Number" min="0" placeholder='0' />
+              </div>
           </div>
-       </div>
 
-       <div className='w-full'>
-         <p className='mb-2'>Product Name</p>
-         <input onChange={(e)=>setName(e.target.value)} value={name}  className='w-full max-w-[500px] px-3 py-2' type="text" placeholder='Type here'  required/>
-       </div>
-        <div className='w-full'>
-         <p className='mb-2'>Product description</p>
-         <textarea onChange={(e)=>setDescription(e.target.value)}  value={description} className='w-full max-w-[500px] px-3 py-2' type="text" placeholder='Write content here'  required/>
-       </div>
-
-        <div className='flex flex-col sm:flex-row gap-2 w-full sm:gap-8'>
-            <div >
-               <p className='mb-2'>Product Category</p>
-                <select onChange={(e)=>setCategory(e.target.value)}  value={category} className='w-full px-3 py-2'>
-                  <option value="Men">Men</option>
-                  <option value="Women">Women</option>
-                  <option value="Kids">Kids</option>
-                </select>
-            </div>
-
-              <div>
-               <p className='mb-2'>Sub Category</p>
-                <select onChange={(e)=>setSubCategory(e.target.value)}  value={subCategory} className='w-full px-3 py-2'>
-                  <option value="Topwear">Topwear</option>
-                  <option value="Bottomwear">Bottomwear</option>
-                  <option value="Winterwear">Winterwear</option>
-                </select>
-            </div>
-
-            <div>
-               <p className='mb-2'>Product price</p>
-                <input onChange={(e)=>setPrice(e.target.value)}  value={price} className='w-full px-3 py-2 sm:w-[120px]' type="Number" placeholder='25' />
-            </div>
-
-            <div>
-               <p className='mb-2'>Discount %</p>
-                <input onChange={(e)=>setDiscountPercent(e.target.value)}  value={discountPercent} className='w-full px-3 py-2 sm:w-[120px]' type="Number" min="0" max="90" placeholder='0' />
-            </div>
-
-            <div>
-               <p className='mb-2'>Rating (optional)</p>
-                <input onChange={(e)=>setRating(e.target.value)}  value={rating} className='w-full px-3 py-2 sm:w-[100px]' type="Number" min="0" max="5" step="0.1" placeholder='e.g. 4.2' />
-            </div>
-
-            <div>
-               <p className='mb-2'>Review Count</p>
-                <input onChange={(e)=>setReviewCount(e.target.value)}  value={reviewCount} className='w-full px-3 py-2 sm:w-[120px]' type="Number" min="0" placeholder='0' />
-            </div>
-        </div>
-
-        <div className='w-full'>
-           <p className='mb-2'>Colors (optional)</p>
-           <div className='flex flex-wrap items-center gap-2 mb-2'>
-              <input onChange={(e)=>setColorName(e.target.value)} value={colorName} className='px-3 py-2' type="text" placeholder='Color name e.g. Charcoal' />
-              <input onChange={(e)=>setColorHex(e.target.value)} value={colorHex} className='w-12 h-9 p-0 border rounded cursor-pointer' type="color" />
-              <button type='button' onClick={addColor} className='px-4 py-2 bg-slate-200 rounded cursor-pointer'>Add Color</button>
-           </div>
-           {colors.length > 0 && (
-             <div className='flex flex-wrap gap-2'>
-               {colors.map((c, i) => (
-                 <span key={i} className='flex items-center gap-2 px-2 py-1 border rounded-full text-sm'>
-                   <span className='w-4 h-4 rounded-full border' style={{ backgroundColor: c.hex }}></span>
-                   {c.name}
-                   <span onClick={()=>removeColor(i)} className='text-red-500 cursor-pointer'>×</span>
-                 </span>
-               ))}
+          <div className='w-full'>
+             <p className={labelClass}>Colors (optional)</p>
+             <div className='flex flex-wrap items-center gap-2 mb-2'>
+                <input onChange={(e)=>setColorName(e.target.value)} value={colorName} className='border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition' type="text" placeholder='Color name e.g. Charcoal' />
+                <input onChange={(e)=>setColorHex(e.target.value)} value={colorHex} className='w-9 h-9 p-0 border border-gray-300 rounded-lg cursor-pointer' type="color" />
+                <button type='button' onClick={addColor} className='px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer'>Add Color</button>
              </div>
-           )}
-        </div>
-        <div>
-           <p className='mb-2'>Product Sizes</p>
-            <div className='flex gap-3 '>
-               <div onClick={()=>setSizes(prev =>prev.includes("S") ? prev.filter(item =>item !== "S") : [...prev,"S"])}>
-                 <p className={`${sizes.includes("S") ? "bg-pink-300" : "bg-slate-200"} px-3 py-1 cursor-pointer rounded`}>S</p>
+             {colors.length > 0 && (
+               <div className='flex flex-wrap gap-2'>
+                 {colors.map((c, i) => (
+                   <span key={i} className='flex items-center gap-2 px-2.5 py-1 border border-gray-200 rounded-full text-sm bg-gray-50'>
+                     <span className='w-3.5 h-3.5 rounded-full border border-gray-300' style={{ backgroundColor: c.hex }}></span>
+                     {c.name}
+                     <span onClick={()=>removeColor(i)} className='text-red-500 cursor-pointer font-medium'>×</span>
+                   </span>
+                 ))}
                </div>
-               
-               <div onClick={()=>setSizes(prev =>prev.includes("M") ? prev.filter(item =>item !== "M") : [...prev ,"M"])}>
-                <p  className={`${sizes.includes("M") ? "bg-pink-300" : "bg-slate-200"} px-3 py-1 cursor-pointer rounded`}>M</p>
-               </div>
-              <div onClick={()=>setSizes(prev =>prev.includes("L") ? prev.filter(item =>item !== "L") : [...prev ,"L"])}>
-                <p className= {`${sizes.includes("L") ? "bg-pink-300" : "bg-slate-200"} px-3 py-1 cursor-pointer rounded `}>L</p>
+             )}
+          </div>
+          <div>
+             <p className={labelClass}>Product Sizes</p>
+              <div className='flex gap-2'>
+                {["S", "M", "L", "XL", "XLL"].map(size => (
+                  <button
+                    type='button'
+                    key={size}
+                    onClick={()=>setSizes(prev =>prev.includes(size) ? prev.filter(item =>item !== size) : [...prev,size])}
+                    className={`w-10 h-10 rounded-lg text-sm font-medium cursor-pointer transition ${sizes.includes(size) ? "bg-green-700 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                  >
+                    {size}
+                  </button>
+                ))}
               </div>
-               <div onClick={()=>setSizes(prev =>prev.includes("XL") ? prev.filter(item =>item !== "XL") : [...prev ,"XL"])}>
-                <p  className={`${sizes.includes("XL") ? "bg-pink-300" : "bg-slate-200"} px-3 py-1 cursor-pointer rounded `}>XL</p>
-              </div>
-               <div onClick={()=>setSizes(prev =>prev.includes("XLL") ? prev.filter(item =>item !== "XLL") : [...prev ,"XLL"])}>
-                <p  className={`${sizes.includes("XLL") ? "bg-pink-300" : "bg-slate-200"} px-3 py-1 cursor-pointer rounded `}>XLL</p>
-              </div>
-
-            </div>
-        </div>
-        <div className='flex gap-2 mt-2'>
-          <input onChange={() => setBestseller(prev => !prev)} checked = {bestseller} type="checkbox"  id="bestseller" />
-          <label  className = "cursor-pointer " htmlFor="bestseller">Add to bestseller</label>
-        </div>
-        <button type='submit' className='w-28 py-3 mt-4 bg-green-700 hover:bg-green-800 text-white rounded-xl cursor-pointer transition'>ADD</button>
-    </form>
+          </div>
+          <label className='flex items-center gap-2 mt-2 cursor-pointer w-fit'>
+            <input onChange={() => setBestseller(prev => !prev)} checked = {bestseller} type="checkbox" className='w-4 h-4 accent-green-700' />
+            <span className='text-sm text-gray-700'>Add to bestseller</span>
+          </label>
+          <button type='submit' className='px-6 py-2.5 mt-2 bg-green-700 hover:bg-green-800 text-white text-sm font-medium rounded-full cursor-pointer transition'>Add Product</button>
+      </form>
+    </div>
 
   )
 }

@@ -5,7 +5,7 @@ import userModel from '../models/userModel.js'
 // Admin: Get stock list for all products
 const getStockList = async (req, res) => {
     try {
-        const products = await productModel.find({}, 'name sizes stock')
+        const products = await productModel.find({}, 'name image sizes stock')
         // Convert Mongoose Map → plain object so frontend Object.entries() works
         const result = products.map(p => {
             const obj = p.toObject()

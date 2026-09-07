@@ -17,7 +17,7 @@ const Wishlist = () => {
       {wishedProducts.length === 0 ? (
         <div className='flex flex-col items-center justify-center text-center py-20 gap-3'>
           <p className='text-gray-500'>Your wishlist is empty.</p>
-          <Link to='/collection' className='text-sm text-gold-dark underline hover:text-charcoal transition-colors'>
+          <Link to='/collection' className='text-sm text-charcoal underline hover:text-charcoal transition-colors'>
             Browse the collection
           </Link>
         </div>

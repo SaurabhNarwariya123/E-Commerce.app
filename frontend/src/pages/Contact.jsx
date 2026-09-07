@@ -17,9 +17,9 @@ const Contact = () => {
             <p className='font-semibold text-xl text-charcoal'>Our Store</p>
             <p className='text-gray-500'>Gwalior, Madhya Pradesh, India</p>
             <p className='text-gray-500'>
-              Tel: <a href="tel:6397496753" className='hover:text-gold-dark transition-colors'>6397496753</a>
+              Tel: <a href="tel:6397496753" className='hover:text-charcoal transition-colors'>6397496753</a>
               <br />
-              Email: <a href="mailto:saurabhnarwariya2019@gmail.com" className='hover:text-gold-dark transition-colors'>saurabhnarwariya2019@gmail.com</a>
+              Email: <a href="mailto:saurabhnarwariya2019@gmail.com" className='hover:text-charcoal transition-colors'>saurabhnarwariya2019@gmail.com</a>
             </p>
 
             <div className='flex items-center gap-4'>

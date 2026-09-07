@@ -76,7 +76,7 @@ const ForgotPassword = () => {
       <Card hover={false} className='w-full sm:max-w-96 p-8 bg-linear-to-b from-white to-beige-light/40'>
       <form onSubmit={resetPassword} className='flex flex-col items-center gap-4 text-gray-800'>
         <div className='inline-flex items-center gap-2 mb-2'>
-          <p className='prata-regular text-3xl bg-linear-to-r from-charcoal to-gold-dark bg-clip-text text-transparent'>Reset Password</p>
+          <p className='prata-regular text-3xl text-charcoal'>Reset Password</p>
           <hr className='border-none h-0.5 w-8 bg-linear-to-r from-gold to-rose' />
         </div>
 
@@ -95,7 +95,7 @@ const ForgotPassword = () => {
           {loading ? 'Resetting...' : 'Reset Password'}
         </Button>
 
-        <p onClick={resendOtp} className='text-sm cursor-pointer text-gold-dark hover:underline'>Resend code</p>
+        <p onClick={resendOtp} className='text-sm cursor-pointer text-charcoal hover:underline'>Resend code</p>
       </form>
       </Card>
       </div>
@@ -107,7 +107,7 @@ const ForgotPassword = () => {
     <Card hover={false} className='w-full sm:max-w-96 p-8 bg-linear-to-b from-white to-beige-light/40'>
     <form onSubmit={requestOtp} className='flex flex-col items-center gap-4 text-gray-800'>
       <div className='inline-flex items-center gap-2 mb-2'>
-        <p className='prata-regular text-3xl bg-linear-to-r from-charcoal to-gold-dark bg-clip-text text-transparent'>Forgot Password</p>
+        <p className='prata-regular text-3xl text-charcoal'>Forgot Password</p>
         <hr className='border-none h-0.5 w-8 bg-linear-to-r from-gold to-rose' />
       </div>
 
@@ -126,7 +126,7 @@ const ForgotPassword = () => {
         {loading ? 'Sending...' : 'Send Reset Code'}
       </Button>
 
-      <p onClick={() => navigate('/login')} className='text-sm cursor-pointer text-gold-dark hover:underline'>Back to login</p>
+      <p onClick={() => navigate('/login')} className='text-sm cursor-pointer text-charcoal hover:underline'>Back to login</p>
     </form>
     </Card>
     </div>

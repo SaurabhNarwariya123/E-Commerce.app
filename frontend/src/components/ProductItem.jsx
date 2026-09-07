@@ -47,7 +47,7 @@ const ProductItem = ({id,image,name,price,discountPercent,colors,rating,reviewCo
                   </span>
                 )}
                 <div className='flex items-center gap-2 mt-1'>
-                  <p className='text-sm font-semibold text-gold-dark'>{currency} {discountedPrice}</p>
+                  <p className='text-sm font-semibold text-charcoal'>{currency} {discountedPrice}</p>
                   {hasDiscount && (
                     <p className='text-xs text-gray-400 line-through'>{currency} {price}</p>
                   )}

@@ -208,7 +208,7 @@ const Orders = () => {
                                             {new Date(item.order.date).toDateString()} &bull; {item.order.paymentMethod}
                                         </p>
                                         {item.order.deliveryPersonName && (
-                                            <p className="text-xs text-gold-dark mt-0.5">
+                                            <p className="text-xs text-charcoal mt-0.5">
                                                 Delivery: <strong>{item.order.deliveryPersonName}</strong>
                                             </p>
                                         )}

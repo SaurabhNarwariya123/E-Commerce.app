@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { backendUrl, currency } from '../App'
 import { toast } from 'react-toastify'
+import { EyeIcon, EditIcon, TrashIcon, IconButton } from '../components/Icons'
+import Pagination, { usePagination } from '../components/Pagination'
 
 const List = ({token}) => {
   const navigate = useNavigate()
@@ -119,11 +121,15 @@ const List = ({token}) => {
      fetchList()
    },[])
 
+   const { page, setPage, totalPages, pageItems, start } = usePagination(list, 10)
 
   return (
     <>
-  <div className='flex items-center justify-between mb-2'>
-    <p>All Product List</p>
+  <div className='flex items-center justify-between mb-4'>
+    <div>
+      <h2 className='text-xl font-semibold text-gray-800'>All Product List</h2>
+      <p className='text-xs text-gray-500 mt-0.5'>{list.length} product{list.length !== 1 ? 's' : ''}</p>
+    </div>
     <button
       onClick={() => navigate('/admin/add')}
       className='bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-2 rounded-full transition cursor-pointer'
@@ -131,29 +137,57 @@ const List = ({token}) => {
       + Add Item
     </button>
   </div>
-  <div className='flex flex-col gap-2'>
-    <div className='hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm'>
-      <b>Image</b>
-      <b>Name</b>
-      <b>Category</b>
-      <b>Price</b>
-      <b className='text-center'>Discount</b>
-      <b className='text-center'>Action</b>
-    </div>
 
-    {list.map((item, index) => (
-      <div key={index} className='grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] items-center py-1 px-2 border text-sm'>
-        <img className='w-12 h-12 object-cover' src={item.image[0]} alt={item.name} />
-        <p>{item.name}</p>
-        <p>{item.category}</p>
-        <p>{currency}{item.price}</p>
-        <p className='text-center'>{item.discountPercent ? `${item.discountPercent}%` : '-'}</p>
-        <div className='flex items-center justify-center gap-3'>
-          <p onClick={()=> openEdit(item)} className='text-blue-600 cursor-pointer'>Edit</p>
-          <p onClick={()=> removeProduct(item._id)} className='text-red-500 cursor-pointer'>X</p>
-        </div>
-      </div>
-    ))}
+  <div className='bg-white border border-gray-200 rounded-2xl overflow-hidden'>
+    {list.length === 0 ? (
+      <p className='text-center text-gray-400 py-12 text-sm'>No products found</p>
+    ) : (
+      <>
+        <table className='w-full text-sm'>
+          <thead className='bg-gray-50 border-b border-gray-200'>
+            <tr>
+              <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Image</th>
+              <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Name</th>
+              <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Category</th>
+              <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Price</th>
+              <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Discount</th>
+              <th className='px-3 py-2.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide'>Action</th>
+            </tr>
+          </thead>
+          <tbody className='divide-y divide-gray-100'>
+            {pageItems.map((item) => (
+              <tr key={item._id} className='hover:bg-gray-50 transition'>
+                <td className='px-3 py-2'>
+                  <img className='w-12 h-12 object-cover rounded-lg' src={item.image[0]} alt={item.name} />
+                </td>
+                <td className='px-3 py-2 font-medium text-gray-800'>{item.name}</td>
+                <td className='px-3 py-2 text-gray-600'>{item.category}</td>
+                <td className='px-3 py-2 text-gray-800'>{currency}{item.price}</td>
+                <td className='px-3 py-2'>
+                  {item.discountPercent
+                    ? <span className='text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium'>{item.discountPercent}%</span>
+                    : <span className='text-gray-400'>-</span>}
+                </td>
+                <td className='px-3 py-2'>
+                  <div className='flex items-center justify-end gap-2'>
+                    <IconButton variant='view' onClick={()=> navigate(`/admin/product/${item._id}`)} aria-label='View product' title='View'>
+                      <EyeIcon />
+                    </IconButton>
+                    <IconButton variant='edit' onClick={()=> openEdit(item)} aria-label='Edit product' title='Edit'>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton variant='delete' onClick={()=> removeProduct(item._id)} aria-label='Delete product' title='Delete'>
+                      <TrashIcon />
+                    </IconButton>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <Pagination page={page} totalPages={totalPages} onChange={setPage} totalItems={list.length} pageSize={10} start={start} />
+      </>
+    )}
   </div>
 
   {editItem && (

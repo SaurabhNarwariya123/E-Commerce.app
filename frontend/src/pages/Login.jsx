@@ -173,7 +173,7 @@ const handleGoogleSignIn = async () => {
           {otpLoading ? 'Verifying...' : 'Verify Email'}
         </Button>
 
-        <p onClick={() => resendOtp(email)} className='text-sm cursor-pointer text-gold-dark hover:underline'>Resend code</p>
+        <p onClick={() => resendOtp(email)} className='text-sm cursor-pointer text-charcoal hover:underline'>Resend code</p>
         <p onClick={() => setStep('form')} className='text-xs text-gray-400 cursor-pointer hover:text-gray-600'>Back</p>
       </form>
       </Card>
@@ -187,7 +187,7 @@ const handleGoogleSignIn = async () => {
       <Card hover={false} className='w-full sm:max-w-96 p-8 bg-linear-to-b from-white to-beige-light/40'>
       <form onSubmit={onSubmitHandler} className='flex flex-col items-center gap-4 text-gray-800'>
         <div className='inline-flex items-center gap-2 mb-2'>
-          <p className='prata-regular text-3xl bg-linear-to-r from-charcoal to-gold-dark bg-clip-text text-transparent'>Login</p>
+          <p className='prata-regular text-3xl text-charcoal'>Login</p>
           <hr className='border-none h-0.5 w-8 bg-linear-to-r from-gold to-rose' />
         </div>
 
@@ -195,13 +195,13 @@ const handleGoogleSignIn = async () => {
         <PasswordInput onChange={(e)=> setPassword(e.target.value)} value={password} className={inputClass} placeholder='Password' />
 
         <div className='w-full flex justify-between text-sm -mt-2'>
-          <p onClick={() => navigate('/forgot-password')} className='cursor-pointer text-gray-500 hover:text-gold-dark transition-colors'>Forgot your password?</p>
-          <p onClick={() => setCurrentState('Sign Up')} className='cursor-pointer text-gray-500 hover:text-gold-dark transition-colors'>Create Account</p>
+          <p onClick={() => navigate('/forgot-password')} className='cursor-pointer text-gray-500 hover:text-charcoal transition-colors'>Forgot your password?</p>
+          <p onClick={() => setCurrentState('Sign Up')} className='cursor-pointer text-gray-500 hover:text-charcoal transition-colors'>Create Account</p>
         </div>
 
         {needsVerification && (
           <p className='text-xs text-gray-500 -mt-2'>
-            Email not verified — <span onClick={() => resendOtp(email)} className='underline cursor-pointer text-gold-dark'>resend verification code</span>
+            Email not verified — <span onClick={() => resendOtp(email)} className='underline cursor-pointer text-charcoal'>resend verification code</span>
           </p>
         )}
 
@@ -224,7 +224,7 @@ const handleGoogleSignIn = async () => {
     <Card hover={false} className='w-full sm:max-w-96 p-8 bg-linear-to-b from-white to-beige-light/40'>
     <form onSubmit={onSubmitHandler} className='flex flex-col items-center gap-4 text-gray-800'>
       <div className='inline-flex items-center gap-2 mb-2'>
-        <p className='prata-regular text-3xl bg-linear-to-r from-charcoal to-gold-dark bg-clip-text text-transparent'>Sign Up</p>
+        <p className='prata-regular text-3xl text-charcoal'>Sign Up</p>
         <hr className='border-none h-0.5 w-8 bg-linear-to-r from-gold to-rose' />
       </div>
 
@@ -233,8 +233,8 @@ const handleGoogleSignIn = async () => {
       <PasswordInput onChange={(e) => setPassword(e.target.value)} value={password} className={inputClass} placeholder='Password' />
 
       <div className='w-full flex justify-between text-sm -mt-2'>
-        <p onClick={() => navigate('/forgot-password')} className='cursor-pointer text-gray-500 hover:text-gold-dark transition-colors'>Forgot your password?</p>
-        <p onClick={() => setCurrentState('Login')} className='cursor-pointer text-gray-500 hover:text-gold-dark transition-colors'>Login</p>
+        <p onClick={() => navigate('/forgot-password')} className='cursor-pointer text-gray-500 hover:text-charcoal transition-colors'>Forgot your password?</p>
+        <p onClick={() => setCurrentState('Login')} className='cursor-pointer text-gray-500 hover:text-charcoal transition-colors'>Login</p>
       </div>
 
       <Button type='submit' variant='gold' size='md' className='w-full mt-2' loading={submitting}>{submitting ? 'Creating Account...' : 'Sign Up'}</Button>

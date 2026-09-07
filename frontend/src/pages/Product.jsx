@@ -135,7 +135,7 @@ const Product = () => {
                     onClick={() => !outOfStock && setSize(item)}
                     className={`relative min-w-[44px] px-3 py-2 text-sm font-medium rounded-lg border-2 transition-all duration-150
                       ${outOfStock ? 'bg-gray-100 text-gray-300 border-gray-200 cursor-not-allowed line-through' :
-                        item === size ? 'border-gold bg-gold/10 text-gold-dark' :
+                        item === size ? 'border-gold bg-gold/10 text-charcoal' :
                         'border-beige bg-white text-gray-700 hover:border-gold cursor-pointer'}`}
                   >
                     {item}
@@ -153,7 +153,7 @@ const Product = () => {
               const qty = productData.stock ? (productData.stock[size] ?? productData.stock.get?.(size) ?? null) : null
               if (qty === null) return null
               if (qty === 0) return <p className='text-xs text-red-500'>Out of stock for size {size}</p>
-              if (qty <= 5) return <p className='text-xs text-gold-dark'>Only {qty} left in size {size}!</p>
+              if (qty <= 5) return <p className='text-xs text-charcoal'>Only {qty} left in size {size}!</p>
               return <p className='text-xs text-green-600'>In stock ({qty} available)</p>
             })()}
            </div>

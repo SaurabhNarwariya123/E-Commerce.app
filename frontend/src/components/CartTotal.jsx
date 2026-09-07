@@ -99,7 +99,7 @@ export const CartTotal = ({ onCouponChange }) => {
           )}
           <div className='flex justify-between'>
             <p>Shipping Fee</p>
-            <p className={deliveryFee === 0 && cartAmount > 0 ? 'text-gold-dark font-semibold' : ''}>{deliveryFee === 0 && cartAmount > 0 ? 'FREE' : `${currency} ${deliveryFee}`}</p>
+            <p className={deliveryFee === 0 && cartAmount > 0 ? 'text-charcoal font-semibold' : ''}>{deliveryFee === 0 && cartAmount > 0 ? 'FREE' : `${currency} ${deliveryFee}`}</p>
 
           </div>
           <hr className='border-beige' />
@@ -116,7 +116,7 @@ export const CartTotal = ({ onCouponChange }) => {
           </p>
         )}
         {cartAmount >= freeDeliveryThreshold && (
-          <p className='text-xs text-gold-dark mt-3'>🎉 Free delivery unlocked</p>
+          <p className='text-xs text-charcoal mt-3'>🎉 Free delivery unlocked</p>
         )}
     </div>
   )

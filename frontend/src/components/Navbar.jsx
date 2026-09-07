@@ -31,7 +31,7 @@ const Navbar = () => {
 
   return (
     <>
-    <div className='sticky top-0 z-30 flex items-center justify-between py-3.5 sm:py-5 font-medium border-b border-beige bg-ivory/90 backdrop-blur-md shadow-sm shadow-black/2'>
+    <div className='sticky top-0 z-30 flex items-center justify-between px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] py-3.5 sm:py-5 font-medium border-b border-beige bg-ivory/90 backdrop-blur-md shadow-sm shadow-black/2'>
      <Link to="/" className='transition-transform duration-300 hover:scale-105'> <img src={assets.logo} className='w-28 sm:w-36' alt="" /></Link>
 
        <ul className='hidden sm:flex gap-8'>
@@ -72,9 +72,9 @@ const Navbar = () => {
                 { token &&
                      <div className='group-hover:block hidden absolute dropdown-menu right-0 pt-3 z-20'>
                      <div className='flex flex-col gap-0.5 w-44 py-2 px-1.5 bg-white border border-beige rounded-xl shadow-xl shadow-black/5 text-sm text-gray-600 animate-pop origin-top-right'>
-                        <p onClick={() => navigate('/profile')} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-gold-dark hover:bg-beige-light/70 transition-colors'>My Profile</p>
-                        <p onClick={() =>navigate('/orders')} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-gold-dark hover:bg-beige-light/70 transition-colors'>Orders</p>
-                        <p onClick={() =>navigate('/wishlist')} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-gold-dark hover:bg-beige-light/70 transition-colors'>Wishlist</p>
+                        <p onClick={() => navigate('/profile')} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-charcoal hover:bg-beige-light/70 transition-colors'>My Profile</p>
+                        <p onClick={() =>navigate('/orders')} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-charcoal hover:bg-beige-light/70 transition-colors'>Orders</p>
+                        <p onClick={() =>navigate('/wishlist')} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-charcoal hover:bg-beige-light/70 transition-colors'>Wishlist</p>
                         <hr className='my-1 border-beige' />
                         <p onClick={logout} className='cursor-pointer rounded-lg px-3.5 py-2 hover:text-rose hover:bg-rose/5 transition-colors'>Logout</p>
                     </div>
@@ -107,10 +107,10 @@ const Navbar = () => {
                 <img src={assets.logo} className='w-24' alt="" />
                 <button onClick={()=> setVisible(false)} aria-label='Close menu' className='text-2xl leading-none text-gray-400 hover:text-charcoal transition-colors cursor-pointer'>&times;</button>
                </div>
-               <NavLink   onClick={()=> setVisible(false)}   className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-gold-dark hover:bg-beige-light/60 ${isActive ? 'text-gold-dark bg-beige-light/60 font-semibold' : ''}`} to='/'>HOME</NavLink>
-               <NavLink   onClick={()=> setVisible(false)}  className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-gold-dark hover:bg-beige-light/60 ${isActive ? 'text-gold-dark bg-beige-light/60 font-semibold' : ''}`} to='/collection'>COLLECTION</NavLink>
-               <NavLink   onClick={()=> setVisible(false)}  className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-gold-dark hover:bg-beige-light/60 ${isActive ? 'text-gold-dark bg-beige-light/60 font-semibold' : ''}`} to='/about'>ABOUT</NavLink>
-               <NavLink   onClick={()=> setVisible(false)}  className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-gold-dark hover:bg-beige-light/60 ${isActive ? 'text-gold-dark bg-beige-light/60 font-semibold' : ''}`} to='/contact'>CONTACT</NavLink>
+               <NavLink   onClick={()=> setVisible(false)}   className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-charcoal hover:bg-beige-light/60 ${isActive ? 'text-charcoal bg-beige-light/60 font-semibold' : ''}`} to='/'>HOME</NavLink>
+               <NavLink   onClick={()=> setVisible(false)}  className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-charcoal hover:bg-beige-light/60 ${isActive ? 'text-charcoal bg-beige-light/60 font-semibold' : ''}`} to='/collection'>COLLECTION</NavLink>
+               <NavLink   onClick={()=> setVisible(false)}  className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-charcoal hover:bg-beige-light/60 ${isActive ? 'text-charcoal bg-beige-light/60 font-semibold' : ''}`} to='/about'>ABOUT</NavLink>
+               <NavLink   onClick={()=> setVisible(false)}  className={({isActive}) => `py-4 pl-6 border-b border-beige tracking-[0.15em] text-sm transition-colors hover:text-charcoal hover:bg-beige-light/60 ${isActive ? 'text-charcoal bg-beige-light/60 font-semibold' : ''}`} to='/contact'>CONTACT</NavLink>
 
              </div>
       </div>

@@ -29,7 +29,7 @@ const NavItem = ({ to, icon, label }) => (
 
 const Sidebar = () => {
     return (
-        <div className='w-[18%] min-w-16 h-screen sticky top-0 border-r border-gray-200 bg-white overflow-y-auto'>
+        <div className='w-[18%] min-w-16 shrink-0 h-full border-r border-gray-200 bg-white overflow-y-auto'>
             <div className='flex flex-col gap-1 py-6 px-3'>
 
                 {NAV_ITEMS.map(item => <NavItem key={item.to} {...item} />)}

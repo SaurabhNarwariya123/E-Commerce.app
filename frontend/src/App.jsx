@@ -42,10 +42,10 @@ const App = () => {
       <Route path='/*' element={
         <>
         <PromoBanner/>
-        <div className = 'px-4 sm:px-[5vw] md:px[7vw] lg:px-[9vw]'>
-          <ToastContainer/>
-           <CartSidebar/>
-           <Navbar/>
+        <ToastContainer/>
+        <CartSidebar/>
+        <Navbar/>
+        <div className = 'px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
            <SearchBar/>
 
           
@@ -69,7 +69,6 @@ const App = () => {
              <Route path='/return-policy' element = {<ReturnPolicy/>}/>
              <Route path='/verify' element = {<Verify/>}/>
             </Routes>
-            <Footer/>
 
             {/* AI Chat - Commented Out
             {token && (
@@ -93,6 +92,7 @@ const App = () => {
             )}
             */}
           </div>
+          <Footer/>
         </>
       }/>
     </Routes>

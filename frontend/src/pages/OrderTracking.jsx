@@ -89,7 +89,7 @@ const OrderTracking = () => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-400 gap-3">
                 <p>Order not found</p>
-                <button onClick={() => navigate('/orders')} className="text-sm text-gold-dark underline">Back to Orders</button>
+                <button onClick={() => navigate('/orders')} className="text-sm text-charcoal underline">Back to Orders</button>
             </div>
         )
     }
@@ -207,7 +207,7 @@ const OrderTracking = () => {
                             href={mapUrls.open}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1 mt-3 text-xs text-gold-dark hover:underline"
+                            className="inline-flex items-center gap-1 mt-3 text-xs text-charcoal hover:underline"
                         >
                             View on Google Maps →
                         </a>
@@ -240,7 +240,7 @@ const OrderTracking = () => {
                                 <span>Subtotal</span><span>{currency}{subtotal.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between text-gray-500">
-                                <span>Delivery</span><span className="text-gold-dark font-medium">Free</span>
+                                <span>Delivery</span><span className="text-charcoal font-medium">Free</span>
                             </div>
                             <div className="flex justify-between text-gray-500">
                                 <span>Tax</span><span>{currency}{tax.toFixed(2)}</span>
@@ -254,7 +254,7 @@ const OrderTracking = () => {
                     {/* Delivery person badge */}
                     {order.deliveryPersonName && (
                         <div className="border border-beige rounded-2xl p-3 flex items-center gap-2">
-                            <div className="w-7 h-7 bg-gold/15 rounded-full flex items-center justify-center text-gold-dark text-xs font-bold shrink-0">
+                            <div className="w-7 h-7 bg-gold/15 rounded-full flex items-center justify-center text-charcoal text-xs font-bold shrink-0">
                                 {order.deliveryPersonName[0].toUpperCase()}
                             </div>
                             <div>

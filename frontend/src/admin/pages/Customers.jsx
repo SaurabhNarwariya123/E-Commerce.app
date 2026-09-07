@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 import { backendUrl, currency } from '../App'
+import Pagination, { usePagination } from '../components/Pagination'
+import { EyeIcon, IconButton } from '../components/Icons'
 
 const initials = (name) => name ? name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) : '?'
 
@@ -8,6 +11,7 @@ const AVATAR_COLORS = ['bg-green-600', 'bg-blue-600', 'bg-purple-600', 'bg-orang
 const avatarColor = (id) => AVATAR_COLORS[[...String(id)].reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length]
 
 const Customers = ({ token }) => {
+    const navigate = useNavigate()
     const [customers, setCustomers] = useState([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
@@ -31,6 +35,8 @@ const Customers = ({ token }) => {
             if (sortBy === 'orders') return b.orderCount - a.orderCount
             return new Date(b.joinedAt || 0) - new Date(a.joinedAt || 0)
         })
+
+    const { page, setPage, totalPages, pageItems, start } = usePagination(filtered, 10)
 
     if (loading) return (
         <div className="flex items-center justify-center h-60">
@@ -65,21 +71,23 @@ const Customers = ({ token }) => {
                 {filtered.length === 0 ? (
                     <p className="text-center text-gray-400 py-12 text-sm">No customers found</p>
                 ) : (
+                    <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Customer</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Orders</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Spent</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Reward Points</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Customer</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Orders</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Spent</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Reward Points</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                                <th className="px-3 py-2.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {filtered.map(c => (
+                            {pageItems.map(c => (
                                 <tr key={c._id} className="hover:bg-gray-50 transition">
-                                    <td className="px-4 py-3">
+                                    <td className="px-3 py-2.5">
                                         <div className="flex items-center gap-3">
                                             <div className={`w-9 h-9 rounded-full ${avatarColor(c._id)} text-white flex items-center justify-center text-xs font-bold shrink-0`}>
                                                 {initials(c.name)}
@@ -90,22 +98,31 @@ const Customers = ({ token }) => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-4 py-3 text-gray-700">{c.orderCount}</td>
-                                    <td className="px-4 py-3 font-semibold text-gray-800">{currency}{c.totalSpent.toFixed(2)}</td>
-                                    <td className="px-4 py-3 text-gray-600">{c.rewardPoints} pts</td>
-                                    <td className="px-4 py-3 text-xs text-gray-400">
+                                    <td className="px-3 py-2.5 text-gray-800">{c.orderCount}</td>
+                                    <td className="px-3 py-2.5 font-semibold text-gray-800">{currency}{c.totalSpent.toFixed(2)}</td>
+                                    <td className="px-3 py-2.5 text-gray-700">{c.rewardPoints} pts</td>
+                                    <td className="px-3 py-2.5 text-xs text-gray-400">
                                         {c.joinedAt ? new Date(c.joinedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                                     </td>
-                                    <td className="px-4 py-3">
+                                    <td className="px-3 py-2.5">
                                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${c.isEmailVerified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                                             {c.isEmailVerified ? 'Verified' : 'Unverified'}
                                         </span>
+                                    </td>
+                                    <td className="px-3 py-2.5">
+                                        <div className="flex items-center justify-end">
+                                            <IconButton variant="view" onClick={() => navigate(`/admin/customer/${c._id}`)} aria-label="View customer" title="View">
+                                                <EyeIcon />
+                                            </IconButton>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                    </div>
                 )}
+                <Pagination page={page} totalPages={totalPages} onChange={setPage} totalItems={filtered.length} pageSize={10} start={start} />
             </div>
         </div>
     )

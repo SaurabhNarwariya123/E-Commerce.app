@@ -1,32 +1,44 @@
 import React from 'react'
-import { assets } from '../assets/assets'
+
+const items = [
+  {
+    title: 'Free Shipping',
+    subtitle: 'On orders over $99',
+    path: 'M3 7h11v8H3zM14 10h4l3 3v2h-7zM6.5 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM17.5 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z',
+  },
+  {
+    title: 'Easy Returns',
+    subtitle: '30-day returns',
+    path: 'M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7M12 11v10',
+  },
+  {
+    title: 'Secure Payment',
+    subtitle: '100% protected',
+    path: 'M12 2l8 3.5V11c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5.5L12 2zM9 12l2 2 4-4',
+  },
+  {
+    title: '24/7 Support',
+    subtitle: "We're here to help",
+    path: 'M4 13a8 8 0 0 1 16 0M4 13v4a2 2 0 0 0 2 2h1v-6H5a1 1 0 0 0-1 1zM20 13v4a2 2 0 0 1-2 2h-1v-6h1a1 1 0 0 1 1 1zM10 19h4',
+  },
+]
 
 const OurPolicy = () => {
   return (
-    <div className='flex flex-col sm:flex-row justify-around gap-8 sm:gap-4 text-center py-20'>
-      <div className='flex flex-col items-center gap-4 px-4 group'>
-        <div className='w-16 h-16 rounded-full bg-beige-light flex items-center justify-center group-hover:bg-gold/15 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-gold/15 transition-all duration-300'>
-          <img src={assets.exchange_icon} className='w-7' alt="" />
+    <div className='bg-beige-light/60 border border-beige rounded-2xl px-6 sm:px-8 py-8 grid grid-cols-2 sm:grid-cols-4 gap-8 my-16'>
+      {items.map((item) => (
+        <div key={item.title} className='flex items-center gap-3 group'>
+          <div className='w-11 h-11 shrink-0 rounded-full bg-ivory flex items-center justify-center group-hover:bg-gold/15 group-hover:scale-110 transition-all duration-300'>
+            <svg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.6' strokeLinecap='round' strokeLinejoin='round' className='text-charcoal/70 group-hover:text-charcoal transition-colors'>
+              <path d={item.path} />
+            </svg>
+          </div>
+          <div className='min-w-0'>
+            <p className='font-semibold text-charcoal text-sm truncate group-hover:text-charcoal transition-colors'>{item.title}</p>
+            <p className='text-gray-400 text-xs truncate'>{item.subtitle}</p>
+          </div>
         </div>
-        <p className='font-semibold text-charcoal text-sm group-hover:text-gold-dark transition-colors'>Easy Exchange Policy</p>
-        <p className='text-gray-400 text-xs sm:text-sm'>We offer a hassle-free exchange policy</p>
-      </div>
-
-      <div className='flex flex-col items-center gap-4 px-4 group'>
-        <div className='w-16 h-16 rounded-full bg-beige-light flex items-center justify-center group-hover:bg-gold/15 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-gold/15 transition-all duration-300'>
-          <img src={assets.quality_icon} className='w-7' alt="" />
-        </div>
-        <p className='font-semibold text-charcoal text-sm group-hover:text-gold-dark transition-colors'>7 Days Return Policy</p>
-        <p className='text-gray-400 text-xs sm:text-sm'>We provide a 7-day free return policy</p>
-      </div>
-
-      <div className='flex flex-col items-center gap-4 px-4 group'>
-        <div className='w-16 h-16 rounded-full bg-beige-light flex items-center justify-center group-hover:bg-gold/15 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-gold/15 transition-all duration-300'>
-          <img src={assets.support_img} className='w-7' alt="" />
-        </div>
-        <p className='font-semibold text-charcoal text-sm group-hover:text-gold-dark transition-colors'>Best Customer Support</p>
-        <p className='text-gray-400 text-xs sm:text-sm'>We provide 24/7 customer support</p>
-      </div>
+      ))}
     </div>
   )
 }

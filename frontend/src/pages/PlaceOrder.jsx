@@ -20,7 +20,7 @@ const OrderConfirmationModal = ({ isOpen, orderData, onClose }) => {
           {/* Success Icon */}
           <div className='mb-3 flex justify-center'>
             <div className='bg-beige-light rounded-full p-3'>
-              <svg className='w-7 h-7 text-gold-dark' fill='currentColor' viewBox='0 0 20 20'>
+              <svg className='w-7 h-7 text-charcoal' fill='currentColor' viewBox='0 0 20 20'>
                 <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
               </svg>
             </div>
@@ -45,7 +45,7 @@ const OrderConfirmationModal = ({ isOpen, orderData, onClose }) => {
             </div>
             <div className='flex justify-between'>
               <span className='text-gray-500'>Payment</span>
-              <span className='font-semibold text-gold-dark'>Cash on Delivery</span>
+              <span className='font-semibold text-charcoal'>Cash on Delivery</span>
             </div>
             <div className='pt-2 border-t border-beige'>
               <p className='text-gray-500 mb-0.5'>Delivery to</p>
@@ -431,7 +431,7 @@ const PlaceOrder = () => {
                                              {addr.phone && <p className='text-xs text-gray-400'>{addr.phone}</p>}
                                          </div>
                                      </div>
-                                     <span className='text-xs text-gold-dark shrink-0'>Use</span>
+                                     <span className='text-xs text-charcoal shrink-0'>Use</span>
                                  </div>
                              ))}
                          </div>

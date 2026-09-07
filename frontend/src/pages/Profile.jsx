@@ -335,7 +335,7 @@ const Profile = () => {
                                     <p className='text-gray-400 text-sm'>No saved addresses yet</p>
                                     <button
                                         onClick={() => setShowAdd(true)}
-                                        className='mt-3 text-xs text-gold-dark underline'
+                                        className='mt-3 text-xs text-charcoal underline'
                                     >
                                         Add your first address
                                     </button>
@@ -396,7 +396,7 @@ const Profile = () => {
                             </div>
                             <div className='text-right'>
                                 <p className='text-xs text-gray-300'>Worth</p>
-                                <p className='text-lg font-semibold text-gold'>₹{rewardValueInRupees}</p>
+                                <p className='text-lg font-semibold text-charcoal'>₹{rewardValueInRupees}</p>
                             </div>
                         </div>
 

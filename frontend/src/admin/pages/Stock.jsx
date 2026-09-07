@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 import { backendUrl } from '../App'
 import { toast } from 'react-toastify'
+import Pagination, { usePagination } from '../components/Pagination'
+import { EyeIcon, EditIcon, IconButton } from '../components/Icons'
 
 const LOW_THRESHOLD = 5
 
 const Stock = ({ token }) => {
+    const navigate = useNavigate()
     const [products, setProducts] = useState([])
     const [loading, setLoading]   = useState(true)
     const [editing, setEditing]   = useState(null)   // productId being edited
@@ -74,11 +78,16 @@ const Stock = ({ token }) => {
         return matchSearch && matchFilter
     })
 
+    const { page, setPage, totalPages, pageItems, start } = usePagination(displayed, 10)
+
     return (
         <div className="space-y-5">
             <div className="flex items-center justify-between flex-wrap gap-3">
-                <h2 className="text-xl font-semibold text-gray-800">Stock Management</h2>
-                <button onClick={fetchStock} className="text-xs border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition">
+                <div>
+                    <h2 className="text-xl font-semibold text-gray-800">Stock Management</h2>
+                    <p className="text-xs text-gray-500 mt-0.5">{products.length} product{products.length !== 1 ? 's' : ''}</p>
+                </div>
+                <button onClick={fetchStock} className="text-xs border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition">
                     ↻ Refresh
                 </button>
             </div>
@@ -110,31 +119,32 @@ const Stock = ({ token }) => {
                     <div className="animate-spin w-7 h-7 border-4 border-gray-200 border-t-gray-700 rounded-full" />
                 </div>
             ) : (
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                     {displayed.length === 0 ? (
                         <p className="text-center text-gray-400 py-12 text-sm">No products found</p>
                     ) : (
+                        <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Product</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Sizes & Stock</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Total</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Action</th>
+                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Product</th>
+                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Sizes & Stock</th>
+                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Total</th>
+                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {displayed.map(product => (
+                                {pageItems.map(product => (
                                     <tr key={product._id} className="hover:bg-gray-50 transition">
 
                                         {/* Product name */}
-                                        <td className="px-4 py-3 font-medium text-gray-800 max-w-[160px]">
+                                        <td className="px-3 py-2.5 font-medium text-gray-800 max-w-[160px]">
                                             <p className="truncate">{product.name}</p>
                                         </td>
 
                                         {/* Sizes & stock */}
-                                        <td className="px-4 py-3">
+                                        <td className="px-3 py-2.5">
                                             {editing === product._id ? (
                                                 <div className="flex flex-wrap gap-2">
                                                     {Object.keys(draft).map(size => (
@@ -168,12 +178,12 @@ const Stock = ({ token }) => {
                                         </td>
 
                                         {/* Total */}
-                                        <td className="px-4 py-3 font-semibold text-gray-800">
+                                        <td className="px-3 py-2.5 font-semibold text-gray-800">
                                             {stockTotal(product.stock)}
                                         </td>
 
                                         {/* Status badge */}
-                                        <td className="px-4 py-3">
+                                        <td className="px-3 py-2.5">
                                             {isLow(product.stock) ? (
                                                 <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">Low Stock</span>
                                             ) : stockTotal(product.stock) === 0 ? (
@@ -184,7 +194,7 @@ const Stock = ({ token }) => {
                                         </td>
 
                                         {/* Actions */}
-                                        <td className="px-4 py-3">
+                                        <td className="px-3 py-2.5">
                                             {editing === product._id ? (
                                                 <div className="flex gap-2">
                                                     <button
@@ -202,19 +212,23 @@ const Stock = ({ token }) => {
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <button
-                                                    onClick={() => startEdit(product)}
-                                                    className="text-xs border border-gray-300 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition"
-                                                >
-                                                    Edit Stock
-                                                </button>
+                                                <div className="flex items-center gap-2">
+                                                    <IconButton variant="view" onClick={() => navigate(`/admin/product/${product._id}`)} aria-label="View product" title="View">
+                                                        <EyeIcon />
+                                                    </IconButton>
+                                                    <IconButton variant="edit" onClick={() => startEdit(product)} aria-label="Edit stock" title="Edit Stock">
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </div>
                                             )}
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+                        </div>
                     )}
+                    <Pagination page={page} totalPages={totalPages} onChange={setPage} totalItems={displayed.length} pageSize={10} start={start} />
                 </div>
             )}
         </div>

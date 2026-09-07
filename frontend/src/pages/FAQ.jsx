@@ -10,7 +10,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }) => (
       className='w-full flex items-center justify-between gap-4 py-4 text-left cursor-pointer'
     >
       <span className='text-sm sm:text-base font-medium text-charcoal'>{question}</span>
-      <span className={`shrink-0 text-gold-dark text-xl leading-none transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>+</span>
+      <span className={`shrink-0 text-charcoal text-xl leading-none transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>+</span>
     </button>
     <div className={`grid transition-all duration-300 ease-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
       <div className='overflow-hidden'>
