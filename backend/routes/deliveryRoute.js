@@ -6,6 +6,7 @@ import {
     listDeliveryPersons,
     removeDeliveryPerson,
     toggleDeliveryStatus,
+    resetDeliveryPassword,
     assignOrderToDelivery,
     getLiveTracking,
     loginDeliveryPerson,
@@ -22,6 +23,7 @@ deliveryRouter.post('/add',           adminAuth, addDeliveryPerson)
 deliveryRouter.get('/list',           adminAuth, listDeliveryPersons)
 deliveryRouter.post('/remove',        adminAuth, removeDeliveryPerson)
 deliveryRouter.post('/toggle-status', adminAuth, toggleDeliveryStatus)
+deliveryRouter.post('/reset-password', adminAuth, resetDeliveryPassword)
 deliveryRouter.post('/assign-order',  adminAuth, assignOrderToDelivery)
 deliveryRouter.get('/tracking',       adminAuth, getLiveTracking)
 

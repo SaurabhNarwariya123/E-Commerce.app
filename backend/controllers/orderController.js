@@ -378,7 +378,16 @@ const userOrders = async (req, res) => {
 const updateStatus = async (req, res) => {
     try {
         const { orderId, status } = req.body
-        await orderModel.findByIdAndUpdate(orderId, { status })
+        const update = {
+            status,
+            $push: { statusHistory: { status, timestamp: new Date() } },
+        }
+        const current = await orderModel.findById(orderId)
+        if (!current) return res.json({ success: false, message: 'Order not found' })
+        if (status === 'Delivered' && current.paymentMethod === 'COD') {
+            update.payment = true // cash is collected on delivery
+        }
+        await orderModel.findByIdAndUpdate(orderId, update)
 
         if (status === 'Delivered') {
             const order = await orderModel.findById(orderId)

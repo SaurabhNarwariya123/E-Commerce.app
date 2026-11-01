@@ -7,7 +7,7 @@ import { EyeIcon, IconButton } from '../components/Icons'
 
 const initials = (name) => name ? name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) : '?'
 
-const AVATAR_COLORS = ['bg-green-600', 'bg-blue-600', 'bg-purple-600', 'bg-orange-500', 'bg-pink-600', 'bg-teal-600']
+const AVATAR_COLORS = ['bg-emerald-600', 'bg-blue-600', 'bg-purple-600', 'bg-orange-500', 'bg-pink-600', 'bg-emerald-600']
 const avatarColor = (id) => AVATAR_COLORS[[...String(id)].reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length]
 
 const Customers = ({ token }) => {
@@ -40,7 +40,7 @@ const Customers = ({ token }) => {
 
     if (loading) return (
         <div className="flex items-center justify-center h-60">
-            <div className="animate-spin w-8 h-8 border-4 border-gray-200 border-t-green-700 rounded-full" />
+            <div className="animate-spin w-8 h-8 border-4 border-gray-200 border-t-emerald-600 rounded-full" />
         </div>
     )
 
@@ -48,8 +48,8 @@ const Customers = ({ token }) => {
         <div className="space-y-5 animate-fade-in-up">
             <div className="flex items-center justify-between flex-wrap gap-3">
                 <div>
-                    <h2 className="text-xl font-semibold text-gray-800">Customers</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">{customers.length} registered customer{customers.length !== 1 ? 's' : ''}</p>
+                    <h1 className="text-xl font-semibold text-[var(--adm-ink)]">Customers</h1>
+                    <p className="text-xs text-[var(--adm-muted)] mt-0.5">{customers.length} registered customer{customers.length !== 1 ? 's' : ''}</p>
                 </div>
                 <div className="flex gap-2">
                     <input
@@ -57,7 +57,7 @@ const Customers = ({ token }) => {
                         placeholder="Search customers..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 w-48"
+                        className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 w-48"
                     />
                     <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm cursor-pointer">
                         <option value="joined">Newest First</option>
@@ -69,19 +69,19 @@ const Customers = ({ token }) => {
 
             <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                 {filtered.length === 0 ? (
-                    <p className="text-center text-gray-400 py-12 text-sm">No customers found</p>
+                    <p className="text-center text-[var(--adm-muted)] py-12 text-sm">No customers found</p>
                 ) : (
                     <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Customer</th>
-                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Orders</th>
-                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Spent</th>
-                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Reward Points</th>
-                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
-                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                                <th className="px-3 py-2.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Action</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Customer</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Orders</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Total Spent</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Reward Points</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Joined</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Status</th>
+                                <th className="px-3 py-2.5 text-right text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -93,19 +93,19 @@ const Customers = ({ token }) => {
                                                 {initials(c.name)}
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="font-medium text-gray-800 truncate">{c.name}</p>
-                                                <p className="text-xs text-gray-400 truncate">{c.email}</p>
+                                                <p className="font-medium text-[var(--adm-ink)] truncate">{c.name}</p>
+                                                <p className="text-xs text-[var(--adm-muted)] truncate">{c.email}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-3 py-2.5 text-gray-800">{c.orderCount}</td>
-                                    <td className="px-3 py-2.5 font-semibold text-gray-800">{currency}{c.totalSpent.toFixed(2)}</td>
-                                    <td className="px-3 py-2.5 text-gray-700">{c.rewardPoints} pts</td>
-                                    <td className="px-3 py-2.5 text-xs text-gray-400">
+                                    <td className="px-3 py-2.5 text-[var(--adm-ink)]">{c.orderCount}</td>
+                                    <td className="px-3 py-2.5 font-semibold text-[var(--adm-ink)]">{currency}{c.totalSpent.toFixed(2)}</td>
+                                    <td className="px-3 py-2.5 text-[var(--adm-ink)]">{c.rewardPoints} pts</td>
+                                    <td className="px-3 py-2.5 text-xs text-[var(--adm-muted)]">
                                         {c.joinedAt ? new Date(c.joinedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                                     </td>
                                     <td className="px-3 py-2.5">
-                                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${c.isEmailVerified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${c.isEmailVerified ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-700'}`}>
                                             {c.isEmailVerified ? 'Verified' : 'Unverified'}
                                         </span>
                                     </td>

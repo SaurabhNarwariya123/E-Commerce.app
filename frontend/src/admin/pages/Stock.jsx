@@ -84,10 +84,10 @@ const Stock = ({ token }) => {
         <div className="space-y-5">
             <div className="flex items-center justify-between flex-wrap gap-3">
                 <div>
-                    <h2 className="text-xl font-semibold text-gray-800">Stock Management</h2>
-                    <p className="text-xs text-gray-500 mt-0.5">{products.length} product{products.length !== 1 ? 's' : ''}</p>
+                    <h1 className="text-xl font-semibold text-[var(--adm-ink)]">Stock Management</h1>
+                    <p className="text-xs text-[var(--adm-muted)] mt-0.5">{products.length} product{products.length !== 1 ? 's' : ''}</p>
                 </div>
-                <button onClick={fetchStock} className="text-xs border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition">
+                <button onClick={fetchStock} className="btn btn-secondary">
                     ↻ Refresh
                 </button>
             </div>
@@ -99,14 +99,15 @@ const Stock = ({ token }) => {
                     placeholder="Search products..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 w-48"
+                    className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 w-48"
                 />
                 <div className="flex bg-gray-100 rounded-lg p-0.5 gap-0.5">
                     {['all', 'low'].map(f => (
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
-                            className={`px-3 py-1.5 text-xs rounded-md font-medium transition ${filter === f ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                            aria-pressed={filter === f}
+                            className="btn btn-tab"
                         >
                             {f === 'all' ? 'All Products' : '⚠️ Low Stock'}
                         </button>
@@ -121,17 +122,17 @@ const Stock = ({ token }) => {
             ) : (
                 <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                     {displayed.length === 0 ? (
-                        <p className="text-center text-gray-400 py-12 text-sm">No products found</p>
+                        <p className="text-center text-[var(--adm-muted)] py-12 text-sm">No products found</p>
                     ) : (
                         <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr>
-                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Product</th>
-                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Sizes & Stock</th>
-                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Total</th>
-                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Action</th>
+                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Product</th>
+                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Sizes & Stock</th>
+                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Total</th>
+                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Status</th>
+                                    <th className="px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
@@ -139,7 +140,7 @@ const Stock = ({ token }) => {
                                     <tr key={product._id} className="hover:bg-gray-50 transition">
 
                                         {/* Product name */}
-                                        <td className="px-3 py-2.5 font-medium text-gray-800 max-w-[160px]">
+                                        <td className="px-3 py-2.5 font-medium text-[var(--adm-ink)] max-w-[160px]">
                                             <p className="truncate">{product.name}</p>
                                         </td>
 
@@ -149,13 +150,13 @@ const Stock = ({ token }) => {
                                                 <div className="flex flex-wrap gap-2">
                                                     {Object.keys(draft).map(size => (
                                                         <div key={size} className="flex items-center gap-1">
-                                                            <span className="text-xs text-gray-500 w-6 text-center font-medium">{size}</span>
+                                                            <span className="text-xs text-[var(--adm-muted)] w-6 text-center font-medium">{size}</span>
                                                             <input
                                                                 type="number"
                                                                 min={0}
                                                                 value={draft[size]}
                                                                 onChange={e => setDraft({ ...draft, [size]: e.target.value })}
-                                                                className="w-14 border border-gray-300 rounded px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-green-400"
+                                                                className="w-14 border border-gray-300 rounded px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-emerald-400"
                                                             />
                                                         </div>
                                                     ))}
@@ -165,20 +166,20 @@ const Stock = ({ token }) => {
                                                     {product.stock && Object.entries(product.stock).map(([size, qty]) => (
                                                         <span
                                                             key={size}
-                                                            className={`text-xs px-2 py-0.5 rounded-full font-medium ${qty <= LOW_THRESHOLD ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-700'}`}
+                                                            className={`text-xs px-2 py-0.5 rounded-full font-medium ${qty <= LOW_THRESHOLD ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-[var(--adm-ink)]'}`}
                                                         >
                                                             {size}: {qty}
                                                         </span>
                                                     ))}
                                                     {(!product.stock || product.stock.size === 0) && (
-                                                        <span className="text-xs text-gray-400">Not set</span>
+                                                        <span className="text-xs text-[var(--adm-muted)]">Not set</span>
                                                     )}
                                                 </div>
                                             )}
                                         </td>
 
                                         {/* Total */}
-                                        <td className="px-3 py-2.5 font-semibold text-gray-800">
+                                        <td className="px-3 py-2.5 font-semibold text-[var(--adm-ink)]">
                                             {stockTotal(product.stock)}
                                         </td>
 
@@ -187,9 +188,9 @@ const Stock = ({ token }) => {
                                             {isLow(product.stock) ? (
                                                 <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">Low Stock</span>
                                             ) : stockTotal(product.stock) === 0 ? (
-                                                <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Not Set</span>
+                                                <span className="text-xs bg-gray-100 text-[var(--adm-muted)] px-2 py-0.5 rounded-full">Not Set</span>
                                             ) : (
-                                                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">In Stock</span>
+                                                <span className="text-xs bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full font-medium">In Stock</span>
                                             )}
                                         </td>
 
@@ -200,13 +201,13 @@ const Stock = ({ token }) => {
                                                     <button
                                                         onClick={() => saveStock(product._id)}
                                                         disabled={saving}
-                                                        className="text-xs bg-green-700 text-white px-3 py-1.5 rounded-lg hover:bg-green-800 disabled:opacity-50"
+                                                        className="btn btn-primary"
                                                     >
                                                         {saving ? 'Saving...' : 'Save'}
                                                     </button>
                                                     <button
                                                         onClick={() => setEditing(null)}
-                                                        className="text-xs border border-gray-300 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50"
+                                                        className="btn btn-secondary"
                                                     >
                                                         Cancel
                                                     </button>

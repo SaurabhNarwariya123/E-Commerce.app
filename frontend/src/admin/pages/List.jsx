@@ -127,12 +127,12 @@ const List = ({token}) => {
     <>
   <div className='flex items-center justify-between mb-4'>
     <div>
-      <h2 className='text-xl font-semibold text-gray-800'>All Product List</h2>
-      <p className='text-xs text-gray-500 mt-0.5'>{list.length} product{list.length !== 1 ? 's' : ''}</p>
+      <h1 className='text-xl font-semibold text-[var(--adm-ink)]'>All Product List</h1>
+      <p className='text-xs text-[var(--adm-muted)] mt-0.5'>{list.length} product{list.length !== 1 ? 's' : ''}</p>
     </div>
     <button
       onClick={() => navigate('/admin/add')}
-      className='bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-2 rounded-full transition cursor-pointer'
+      className='btn btn-primary'
     >
       + Add Item
     </button>
@@ -140,18 +140,18 @@ const List = ({token}) => {
 
   <div className='bg-white border border-gray-200 rounded-2xl overflow-hidden'>
     {list.length === 0 ? (
-      <p className='text-center text-gray-400 py-12 text-sm'>No products found</p>
+      <p className='text-center text-[var(--adm-muted)] py-12 text-sm'>No products found</p>
     ) : (
       <>
         <table className='w-full text-sm'>
           <thead className='bg-gray-50 border-b border-gray-200'>
             <tr>
-              <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Image</th>
-              <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Name</th>
-              <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Category</th>
-              <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Price</th>
-              <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Discount</th>
-              <th className='px-3 py-2.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide'>Action</th>
+              <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Image</th>
+              <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Name</th>
+              <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Category</th>
+              <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Price</th>
+              <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Discount</th>
+              <th className='px-3 py-2.5 text-right text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Action</th>
             </tr>
           </thead>
           <tbody className='divide-y divide-gray-100'>
@@ -160,13 +160,13 @@ const List = ({token}) => {
                 <td className='px-3 py-2'>
                   <img className='w-12 h-12 object-cover rounded-lg' src={item.image[0]} alt={item.name} />
                 </td>
-                <td className='px-3 py-2 font-medium text-gray-800'>{item.name}</td>
-                <td className='px-3 py-2 text-gray-600'>{item.category}</td>
-                <td className='px-3 py-2 text-gray-800'>{currency}{item.price}</td>
+                <td className='px-3 py-2 font-medium text-[var(--adm-ink)]'>{item.name}</td>
+                <td className='px-3 py-2 text-[var(--adm-muted)]'>{item.category}</td>
+                <td className='px-3 py-2 text-[var(--adm-ink)]'>{currency}{item.price}</td>
                 <td className='px-3 py-2'>
                   {item.discountPercent
                     ? <span className='text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium'>{item.discountPercent}%</span>
-                    : <span className='text-gray-400'>-</span>}
+                    : <span className='text-[var(--adm-muted)]'>-</span>}
                 </td>
                 <td className='px-3 py-2'>
                   <div className='flex items-center justify-end gap-2'>
@@ -221,7 +221,7 @@ const List = ({token}) => {
           <div className='flex flex-wrap items-center gap-2 mb-2'>
             <input value={colorName} onChange={(e)=>setColorName(e.target.value)} className='px-3 py-2 border rounded' type='text' placeholder='Color name' />
             <input value={colorHex} onChange={(e)=>setColorHex(e.target.value)} className='w-12 h-9 p-0 border rounded cursor-pointer' type='color' />
-            <button type='button' onClick={addColor} className='px-3 py-2 bg-slate-200 rounded cursor-pointer'>Add</button>
+            <button type='button' onClick={addColor} className='btn btn-secondary'>Add</button>
           </div>
           {editColors.length > 0 && (
             <div className='flex flex-wrap gap-2'>
@@ -241,8 +241,8 @@ const List = ({token}) => {
         </label>
 
         <div className='flex justify-end gap-2 mt-2'>
-          <button onClick={closeEdit} className='px-4 py-2 rounded border cursor-pointer'>Cancel</button>
-          <button onClick={saveEdit} disabled={saving} className='px-4 py-2 rounded bg-green-700 hover:bg-green-800 text-white cursor-pointer disabled:opacity-50 transition'>{saving ? 'Saving...' : 'Save'}</button>
+          <button onClick={closeEdit} className='btn btn-secondary'>Cancel</button>
+          <button onClick={saveEdit} disabled={saving} className='btn btn-primary'>{saving ? 'Saving...' : 'Save'}</button>
         </div>
       </div>
     </div>

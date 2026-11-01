@@ -88,19 +88,19 @@ const Offers = ({ token }) => {
 
     const { page, setPage, totalPages, pageItems, start } = usePagination(offers, 10)
 
-    const labelClass = 'text-sm font-medium text-gray-700 mb-1.5 block'
-    const inputClass = 'w-full max-w-125 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition'
+    const labelClass = 'text-sm font-medium text-[var(--adm-ink)] mb-1.5 block'
+    const inputClass = 'w-full max-w-125 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition'
 
     return (
         <div className='flex flex-col gap-5'>
             <div className='flex items-center justify-between flex-wrap gap-3'>
                 <div>
-                    <h2 className='text-xl font-semibold text-gray-800'>Festival Offers</h2>
-                    <p className='text-xs text-gray-500 mt-0.5'>{offers.length} offer{offers.length !== 1 ? 's' : ''}</p>
+                    <h1 className='text-xl font-semibold text-[var(--adm-ink)]'>Festival Offers</h1>
+                    <p className='text-xs text-[var(--adm-muted)] mt-0.5'>{offers.length} offer{offers.length !== 1 ? 's' : ''}</p>
                 </div>
                 <button
                     onClick={() => setShowForm(true)}
-                    className='bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-2 rounded-full transition cursor-pointer'
+                    className='bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-full transition cursor-pointer'
                 >
                     + Add Offer
                 </button>
@@ -110,14 +110,14 @@ const Offers = ({ token }) => {
                 <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4' onClick={() => setShowForm(false)}>
                     <div className='bg-white rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto' onClick={(e) => e.stopPropagation()}>
                         <div className='flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl'>
-                            <h2 className='text-lg font-semibold text-gray-800'>Add Festival Offer</h2>
-                            <button onClick={() => setShowForm(false)} className='text-gray-400 hover:text-gray-700 text-2xl leading-none cursor-pointer' aria-label='Close'>&times;</button>
+                            <h2 className='text-lg font-semibold text-[var(--adm-ink)]'>Add Festival Offer</h2>
+                            <button onClick={() => setShowForm(false)} className='text-[var(--adm-muted)] hover:text-[var(--adm-ink)] text-2xl leading-none cursor-pointer' aria-label='Close'>&times;</button>
                         </div>
                         <form onSubmit={onSubmitHandler} className='flex flex-col w-full items-start gap-4 p-6'>
                             <div>
                                 <p className={labelClass}>Offer Image</p>
                                 <label htmlFor="offerImage">
-                                    <div className='w-24 h-24 rounded-lg border border-dashed border-gray-300 hover:border-green-400 transition overflow-hidden'>
+                                    <div className='w-24 h-24 rounded-lg border border-dashed border-gray-300 hover:border-emerald-400 transition overflow-hidden'>
                                         <img className='w-full h-full object-cover cursor-pointer' src={!image ? assets.upload_area : URL.createObjectURL(image)} alt="" />
                                     </div>
                                     <input onChange={(e) => setImage(e.target.files[0])} type="file" id='offerImage' hidden />
@@ -142,17 +142,17 @@ const Offers = ({ token }) => {
                             <div className='flex flex-col sm:flex-row gap-4 w-full'>
                                 <div>
                                     <p className={labelClass}>Start Date</p>
-                                    <input onChange={(e) => setStartDate(e.target.value)} value={startDate} className='border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition' type="date" required />
+                                    <input onChange={(e) => setStartDate(e.target.value)} value={startDate} className='border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition' type="date" required />
                                 </div>
                                 <div>
                                     <p className={labelClass}>End Date</p>
-                                    <input onChange={(e) => setEndDate(e.target.value)} value={endDate} className='border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition' type="date" required />
+                                    <input onChange={(e) => setEndDate(e.target.value)} value={endDate} className='border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition' type="date" required />
                                 </div>
                             </div>
 
                             <div className='flex justify-end gap-2 w-full mt-2'>
-                                <button type='button' onClick={() => setShowForm(false)} className='px-4 py-2 rounded border border-gray-300 text-gray-700 text-sm cursor-pointer hover:bg-gray-50 transition'>Cancel</button>
-                                <button type='submit' className='px-6 py-2.5 bg-green-700 hover:bg-green-800 text-white text-sm font-medium rounded-full cursor-pointer transition'>Add Offer</button>
+                                <button type='button' onClick={() => setShowForm(false)} className='px-4 py-2 rounded border border-gray-300 text-[var(--adm-ink)] text-sm cursor-pointer hover:bg-gray-50 transition'>Cancel</button>
+                                <button type='submit' className='px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-full cursor-pointer transition'>Add Offer</button>
                             </div>
                         </form>
                     </div>
@@ -162,18 +162,18 @@ const Offers = ({ token }) => {
             <div>
                 <div className='bg-white border border-gray-200 rounded-2xl overflow-hidden'>
                     {offers.length === 0 ? (
-                        <p className='text-center text-gray-400 py-12 text-sm'>No offers yet</p>
+                        <p className='text-center text-[var(--adm-muted)] py-12 text-sm'>No offers yet</p>
                     ) : (
                         <>
                             <div className='overflow-x-auto'>
                             <table className='w-full text-sm'>
                                 <thead className='bg-gray-50 border-b border-gray-200'>
                                     <tr>
-                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Image</th>
-                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Title</th>
-                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Start Date</th>
-                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>End Date</th>
-                                        <th className='px-3 py-2.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide'>Action</th>
+                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Image</th>
+                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Title</th>
+                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Start Date</th>
+                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>End Date</th>
+                                        <th className='px-3 py-2.5 text-right text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className='divide-y divide-gray-100'>
@@ -182,9 +182,9 @@ const Offers = ({ token }) => {
                                             <td className='px-3 py-2'>
                                                 <img className='w-12 h-12 object-cover rounded-lg' src={offer.imageUrl} alt={offer.title} />
                                             </td>
-                                            <td className='px-3 py-2 font-medium text-gray-800'>{offer.title}</td>
-                                            <td className='px-3 py-2 text-gray-700'>{new Date(offer.startDate).toLocaleDateString()}</td>
-                                            <td className='px-3 py-2 text-gray-700'>{new Date(offer.endDate).toLocaleDateString()}</td>
+                                            <td className='px-3 py-2 font-medium text-[var(--adm-ink)]'>{offer.title}</td>
+                                            <td className='px-3 py-2 text-[var(--adm-ink)]'>{new Date(offer.startDate).toLocaleDateString()}</td>
+                                            <td className='px-3 py-2 text-[var(--adm-ink)]'>{new Date(offer.endDate).toLocaleDateString()}</td>
                                             <td className='px-3 py-2'>
                                                 <div className='flex items-center justify-end gap-2'>
                                                     <IconButton variant='view' onClick={() => navigate(`/admin/offer/${offer._id}`)} aria-label='View offer' title='View'>

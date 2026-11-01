@@ -68,7 +68,7 @@ const NotificationBell = ({ token }) => {
             >
                 <span className='text-lg'>🔔</span>
                 {unreadCount > 0 && (
-                    <span className='absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center'>
+                    <span className='absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center'>
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}
@@ -76,18 +76,18 @@ const NotificationBell = ({ token }) => {
 
             {open && (
                 <div className='absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-white border border-gray-200 rounded-xl shadow-lg z-50 animate-fade-in'>
-                    <div className='px-4 py-3 border-b border-gray-100 font-semibold text-sm text-gray-800'>Notifications</div>
+                    <div className='px-4 py-3 border-b border-gray-100 font-semibold text-sm text-[var(--adm-ink)]'>Notifications</div>
                     {notifications.length === 0 ? (
-                        <p className='text-center text-gray-400 text-sm py-8'>You're all caught up</p>
+                        <p className='text-center text-[var(--adm-muted)] text-sm py-8'>You're all caught up</p>
                     ) : (
                         <div className='divide-y divide-gray-50'>
                             {notifications.map(n => (
                                 <div key={n.id} className='flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition'>
                                     <span className='text-lg shrink-0'>{TYPE_ICON[n.type] || '🔔'}</span>
                                     <div className='min-w-0'>
-                                        <p className='text-sm font-medium text-gray-800'>{n.title}</p>
-                                        <p className='text-xs text-gray-500 truncate'>{n.message}</p>
-                                        <p className='text-[10px] text-gray-400 mt-0.5'>{timeAgo(n.timestamp)}</p>
+                                        <p className='text-sm font-medium text-[var(--adm-ink)]'>{n.title}</p>
+                                        <p className='text-xs text-[var(--adm-muted)] truncate'>{n.message}</p>
+                                        <p className='text-xs text-[var(--adm-muted)] mt-0.5'>{timeAgo(n.timestamp)}</p>
                                     </div>
                                 </div>
                             ))}

@@ -48,6 +48,23 @@ const removeDeliveryPerson = async (req, res) => {
     }
 }
 
+// --- Admin: Reset a delivery person's password
+const resetDeliveryPassword = async (req, res) => {
+    try {
+        const { deliveryPersonId, newPassword } = req.body
+        if (!deliveryPersonId || typeof newPassword !== 'string' || newPassword.length < 6) {
+            return res.json({ success: false, message: 'Password must be at least 6 characters' })
+        }
+        const dp = await deliveryPersonModel.findById(deliveryPersonId)
+        if (!dp) return res.json({ success: false, message: 'Delivery person not found' })
+        dp.password = await bcrypt.hash(newPassword, 10)
+        await dp.save()
+        res.json({ success: true, message: `Password reset for ${dp.name}` })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+}
+
 // ─── Admin: Toggle active status ─────────────────────────────────────────────
 const toggleDeliveryStatus = async (req, res) => {
     try {
@@ -273,6 +290,8 @@ const updateDeliveryOrderStatus = async (req, res) => {
 
         await orderModel.findByIdAndUpdate(orderId, {
             status,
+            // COD cash is collected by the delivery person at the door
+            ...(status === 'Delivered' && order.paymentMethod === 'COD' ? { payment: true } : {}),
             $push: { statusHistory: { status, timestamp: new Date() } }
         })
 
@@ -312,6 +331,7 @@ const updateDeliveryOrderStatus = async (req, res) => {
 }
 
 export {
+    resetDeliveryPassword,
     addDeliveryPerson,
     listDeliveryPersons,
     removeDeliveryPerson,

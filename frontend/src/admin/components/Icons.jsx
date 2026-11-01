@@ -24,18 +24,10 @@ export const TrashIcon = (props) => (
     </svg>
 )
 
-export const IconButton = ({ variant = 'default', className = '', ...props }) => {
-    const variants = {
-        view: 'text-gray-600 border-gray-200 hover:bg-gray-50',
-        edit: 'text-blue-600 border-blue-200 hover:bg-blue-50',
-        delete: 'text-red-500 border-red-200 hover:bg-red-50',
-        default: 'text-gray-600 border-gray-200 hover:bg-gray-50',
-    }
-    return (
-        <button
-            type="button"
-            className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition cursor-pointer ${variants[variant] || variants.default} ${className}`}
-            {...props}
-        />
-    )
-}
+export const IconButton = ({ variant = 'default', className = '', ...props }) => (
+    <button
+        type="button"
+        className={`btn btn-icon ${variant === 'delete' ? 'btn-icon-danger' : ''} ${className}`}
+        {...props}
+    />
+)

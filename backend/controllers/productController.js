@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary'
 import productModel from '../models/productModel.js'
+import { syncProduct, indexProduct, removeProductFromIndex } from '../ai/rag/indexer.js'
 
 
 // function for add product 
@@ -58,6 +59,7 @@ import productModel from '../models/productModel.js'
 
          const product = new productModel(productData);
           await product.save()
+          syncProduct(indexProduct, product)
 
           res.json({ success:true, message:"Product Added"})
 
@@ -100,6 +102,7 @@ import productModel from '../models/productModel.js'
 
       try {
          await productModel.findByIdAndDelete(req.body.id)
+         syncProduct(removeProductFromIndex, req.body.id)
          res.json({success:true,message:"Product Removed"})
         
       } catch (error) {
@@ -153,6 +156,8 @@ import productModel from '../models/productModel.js'
         if (!product) {
             return res.json({ success:false, message:"Product not found" })
         }
+
+        syncProduct(indexProduct, product)
 
         res.json({ success:true, message:"Product Updated", product })
 

@@ -90,19 +90,19 @@ const Coupons = ({ token }) => {
     const isExpired = (c) => new Date(c.expiryDate) < new Date()
     const { page, setPage, totalPages, pageItems, start } = usePagination(coupons, 10)
 
-    const labelClass = 'text-sm font-medium text-gray-700 mb-1.5 block'
-    const inputClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition'
+    const labelClass = 'text-sm font-medium text-[var(--adm-ink)] mb-1.5 block'
+    const inputClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition'
 
     return (
         <div className='flex flex-col gap-5'>
             <div className='flex items-center justify-between flex-wrap gap-3'>
                 <div>
-                    <h2 className='text-xl font-semibold text-gray-800'>Coupons</h2>
-                    <p className='text-xs text-gray-500 mt-0.5'>{coupons.length} coupon{coupons.length !== 1 ? 's' : ''}</p>
+                    <h1 className='text-xl font-semibold text-[var(--adm-ink)]'>Coupons</h1>
+                    <p className='text-xs text-[var(--adm-muted)] mt-0.5'>{coupons.length} coupon{coupons.length !== 1 ? 's' : ''}</p>
                 </div>
                 <button
                     onClick={() => setShowForm(true)}
-                    className='bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-2 rounded-full transition cursor-pointer'
+                    className='bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2 rounded-full transition cursor-pointer'
                 >
                     + Add Coupon
                 </button>
@@ -112,8 +112,8 @@ const Coupons = ({ token }) => {
                 <div className='fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4' onClick={() => setShowForm(false)}>
                     <div className='bg-white rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto' onClick={(e) => e.stopPropagation()}>
                         <div className='flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl'>
-                            <h2 className='text-lg font-semibold text-gray-800'>Add Coupon</h2>
-                            <button onClick={() => setShowForm(false)} className='text-gray-400 hover:text-gray-700 text-2xl leading-none cursor-pointer' aria-label='Close'>&times;</button>
+                            <h2 className='text-lg font-semibold text-[var(--adm-ink)]'>Add Coupon</h2>
+                            <button onClick={() => setShowForm(false)} className='text-[var(--adm-muted)] hover:text-[var(--adm-ink)] text-2xl leading-none cursor-pointer' aria-label='Close'>&times;</button>
                         </div>
                         <form onSubmit={onSubmitHandler} className='flex flex-col w-full items-start gap-4 p-6'>
                             <div className='w-full'>
@@ -160,8 +160,8 @@ const Coupons = ({ token }) => {
                             </div>
 
                             <div className='flex justify-end gap-2 w-full mt-2'>
-                                <button type='button' onClick={() => setShowForm(false)} className='px-4 py-2 rounded border border-gray-300 text-gray-700 text-sm cursor-pointer hover:bg-gray-50 transition'>Cancel</button>
-                                <button type='submit' className='px-6 py-2.5 bg-green-700 hover:bg-green-800 text-white text-sm font-medium rounded-full cursor-pointer transition'>Add Coupon</button>
+                                <button type='button' onClick={() => setShowForm(false)} className='px-4 py-2 rounded border border-gray-300 text-[var(--adm-ink)] text-sm cursor-pointer hover:bg-gray-50 transition'>Cancel</button>
+                                <button type='submit' className='px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-full cursor-pointer transition'>Add Coupon</button>
                             </div>
                         </form>
                     </div>
@@ -171,34 +171,34 @@ const Coupons = ({ token }) => {
             <div>
                 <div className='bg-white border border-gray-200 rounded-2xl overflow-hidden'>
                     {coupons.length === 0 ? (
-                        <p className='text-center text-gray-400 py-12 text-sm'>No coupons yet</p>
+                        <p className='text-center text-[var(--adm-muted)] py-12 text-sm'>No coupons yet</p>
                     ) : (
                         <>
                             <div className='overflow-x-auto'>
                             <table className='w-full text-sm'>
                                 <thead className='bg-gray-50 border-b border-gray-200'>
                                     <tr>
-                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Code</th>
-                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Discount</th>
-                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Min Order</th>
-                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Used</th>
-                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Expiry</th>
-                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide'>Status</th>
-                                        <th className='px-3 py-2.5 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide'>Action</th>
+                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Code</th>
+                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Discount</th>
+                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Min Order</th>
+                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Used</th>
+                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Expiry</th>
+                                        <th className='px-3 py-2.5 text-left text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Status</th>
+                                        <th className='px-3 py-2.5 text-right text-xs font-semibold text-[var(--adm-muted)] uppercase tracking-wide'>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className='divide-y divide-gray-100'>
                                     {pageItems.map((c) => (
                                         <tr key={c._id} className='hover:bg-gray-50 transition'>
-                                            <td className='px-3 py-2 font-semibold text-gray-800'>{c.code}</td>
-                                            <td className='px-3 py-2 text-gray-800'>{c.discountType === 'percent' ? `${c.discountValue}%` : `₹${c.discountValue}`}</td>
-                                            <td className='px-3 py-2 text-gray-700'>₹{c.minOrderAmount}</td>
-                                            <td className='px-3 py-2 text-gray-700'>{c.usedCount}{c.usageLimit ? `/${c.usageLimit}` : ''}</td>
-                                            <td className={`px-3 py-2 ${isExpired(c) ? 'text-red-500' : 'text-gray-700'}`}>{new Date(c.expiryDate).toLocaleDateString()}</td>
+                                            <td className='px-3 py-2 font-semibold text-[var(--adm-ink)]'>{c.code}</td>
+                                            <td className='px-3 py-2 text-[var(--adm-ink)]'>{c.discountType === 'percent' ? `${c.discountValue}%` : `₹${c.discountValue}`}</td>
+                                            <td className='px-3 py-2 text-[var(--adm-ink)]'>₹{c.minOrderAmount}</td>
+                                            <td className='px-3 py-2 text-[var(--adm-ink)]'>{c.usedCount}{c.usageLimit ? `/${c.usageLimit}` : ''}</td>
+                                            <td className={`px-3 py-2 ${isExpired(c) ? 'text-red-500' : 'text-[var(--adm-ink)]'}`}>{new Date(c.expiryDate).toLocaleDateString()}</td>
                                             <td className='px-3 py-2'>
                                                 <button
                                                     onClick={() => toggleCoupon(c._id)}
-                                                    className={`text-xs px-2 py-0.5 rounded-full font-medium cursor-pointer transition ${c.isActive ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                                                    className={`text-xs px-2 py-0.5 rounded-full font-medium cursor-pointer transition ${c.isActive ? 'bg-emerald-100 text-emerald-600 hover:bg-green-200' : 'bg-gray-100 text-[var(--adm-muted)] hover:bg-gray-200'}`}
                                                 >
                                                     {c.isActive ? 'Active' : 'Inactive'}
                                                 </button>

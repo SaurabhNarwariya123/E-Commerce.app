@@ -6,8 +6,9 @@ const adminAuth = async (req, res, next) => {
         let token = req.headers.token;
         if (!token && req.headers.authorization) {
             const auth = req.headers.authorization;
-            if (auth.startsWith('Bearer ')) token = auth.slice(7);
+            if (/^Bearer/i.test(auth)) token = auth.replace(/^Bearer\s+/i, '');
         }
+        token = token?.trim();
 
         if (!token) {
             return res.status(401).json({ success: false, message: "Not Authorized Login Again" });
@@ -25,6 +26,7 @@ const adminAuth = async (req, res, next) => {
             return res.status(401).json({ success: false, message: "Not Authorized Login Again" });
         }
 
+        req.admin = decoded
         next();
     } catch (error) {
         console.error('Admin auth error:', error);

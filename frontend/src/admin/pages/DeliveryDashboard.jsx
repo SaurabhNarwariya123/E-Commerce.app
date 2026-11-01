@@ -83,7 +83,7 @@ const DeliveryDashboard = ({ token }) => {
     return (
         <div className="p-4">
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-800">Live Delivery Tracking</h2>
+                <h1 className="text-xl font-semibold text-[var(--adm-ink)]">Live Delivery Tracking</h1>
                 <button
                     onClick={fetchTracking}
                     className="text-sm border border-gray-300 px-4 py-1.5 rounded hover:bg-gray-50"
@@ -95,18 +95,18 @@ const DeliveryDashboard = ({ token }) => {
             {/* Stats bar */}
             <div className="grid grid-cols-3 gap-4 mb-5">
                 <div className="bg-white border rounded-lg p-4 text-center">
-                    <p className="text-2xl font-bold text-gray-800">{deliveryPersons.length}</p>
-                    <p className="text-xs text-gray-500 mt-1">Total Delivery Persons</p>
+                    <p className="text-2xl font-bold text-[var(--adm-ink)]">{deliveryPersons.length}</p>
+                    <p className="text-xs text-[var(--adm-muted)] mt-1">Total Delivery Persons</p>
                 </div>
                 <div className="bg-white border rounded-lg p-4 text-center">
-                    <p className="text-2xl font-bold text-green-600">
+                    <p className="text-2xl font-bold text-emerald-600">
                         {deliveryPersons.filter(dp => dp.isActive && !dp.isAvailable).length}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">On Delivery</p>
+                    <p className="text-xs text-[var(--adm-muted)] mt-1">On Delivery</p>
                 </div>
                 <div className="bg-white border rounded-lg p-4 text-center">
                     <p className="text-2xl font-bold text-blue-600">{activeWithLocation.length}</p>
-                    <p className="text-xs text-gray-500 mt-1">Sharing Live Location</p>
+                    <p className="text-xs text-[var(--adm-muted)] mt-1">Sharing Live Location</p>
                 </div>
             </div>
 
@@ -130,9 +130,9 @@ const DeliveryDashboard = ({ token }) => {
                             <Popup>
                                 <div>
                                     <p className="font-bold">{dp.name}</p>
-                                    <p className="text-xs text-gray-500">{dp.phone}</p>
+                                    <p className="text-xs text-[var(--adm-muted)]">{dp.phone}</p>
                                     <p className="text-xs mt-1">Orders: {dp.assignedOrders?.length || 0}</p>
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-xs text-[var(--adm-muted)]">
                                         Updated: {dp.currentLocation.updatedAt
                                             ? new Date(dp.currentLocation.updatedAt).toLocaleTimeString()
                                             : 'unknown'}
@@ -146,32 +146,32 @@ const DeliveryDashboard = ({ token }) => {
             </div>
 
             {/* Delivery person list */}
-            <h3 className="text-base font-semibold text-gray-700 mb-3">Active Delivery Persons</h3>
+            <h3 className="text-base font-semibold text-[var(--adm-ink)] mb-3">Active Delivery Persons</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {deliveryPersons.filter(dp => dp.isActive).map(dp => (
                     <div key={dp._id} className="bg-white border rounded-lg p-4">
                         <div className="flex items-start justify-between">
                             <div>
-                                <p className="font-medium text-gray-800">{dp.name}</p>
-                                <p className="text-xs text-gray-500">{dp.phone}</p>
+                                <p className="font-medium text-[var(--adm-ink)]">{dp.name}</p>
+                                <p className="text-xs text-[var(--adm-muted)]">{dp.phone}</p>
                             </div>
-                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${dp.isAvailable ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${dp.isAvailable ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-700'}`}>
                                 {dp.isAvailable ? 'Free' : 'On Delivery'}
                             </span>
                         </div>
-                        <div className="mt-3 text-xs text-gray-500 space-y-1">
+                        <div className="mt-3 text-xs text-[var(--adm-muted)] space-y-1">
                             <p>Orders assigned: <strong>{dp.assignedOrders?.length || 0}</strong></p>
                             {dp.currentLocation?.lat != null
-                                ? <p className="text-green-600">
+                                ? <p className="text-emerald-600">
                                     Location sharing active &bull; {new Date(dp.currentLocation.updatedAt).toLocaleTimeString()}
                                   </p>
-                                : <p className="text-gray-400">No location shared yet</p>
+                                : <p className="text-[var(--adm-muted)]">No location shared yet</p>
                             }
                         </div>
                     </div>
                 ))}
                 {deliveryPersons.filter(dp => dp.isActive).length === 0 && (
-                    <p className="text-gray-400 text-sm col-span-3">No active delivery persons</p>
+                    <p className="text-[var(--adm-muted)] text-sm col-span-3">No active delivery persons</p>
                 )}
             </div>
         </div>

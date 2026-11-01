@@ -3,18 +3,18 @@ import Title from '../components/Title'
 import { ShopContext } from '../context/ShopContext'
 
 const FAQItem = ({ question, answer, isOpen, onClick }) => (
-  <div className='border-b border-beige'>
+  <div className={`rounded-2xl border bg-white transition-all duration-300 ${isOpen ? 'border-gold/50 shadow-md' : 'border-beige shadow-sm hover:border-gold/30'}`}>
     <button
       type='button'
       onClick={onClick}
-      className='w-full flex items-center justify-between gap-4 py-4 text-left cursor-pointer'
+      className='w-full flex items-center justify-between gap-4 px-5 py-4 text-left cursor-pointer'
     >
-      <span className='text-sm sm:text-base font-medium text-charcoal'>{question}</span>
-      <span className={`shrink-0 text-charcoal text-xl leading-none transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>+</span>
+      <span className={`text-base sm:text-lg font-medium transition-colors ${isOpen ? 'text-gold-dark' : 'text-charcoal'}`}>{question}</span>
+      <span className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xl leading-none transition-all duration-300 ${isOpen ? 'rotate-45 bg-gold text-white' : 'bg-beige-light text-gold-dark'}`}>+</span>
     </button>
     <div className={`grid transition-all duration-300 ease-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
       <div className='overflow-hidden'>
-        <p className='text-gray-500 text-sm leading-relaxed pb-4'>{answer}</p>
+        <p className='text-gray-600 text-sm sm:text-[15px] leading-relaxed px-5 pb-5'>{answer}</p>
       </div>
     </div>
   </div>
@@ -60,12 +60,13 @@ const FAQ = () => {
   ]
 
   return (
-    <div className='pt-8 pb-16 border-t border-beige max-w-2xl mx-auto'>
-      <div className='text-center mb-10'>
-        <Title text1={'FREQUENTLY ASKED'} text2={'QUESTIONS'} />
+    <div className='pt-10 pb-16 border-t border-beige max-w-2xl mx-auto'>
+      <div className='text-center mb-3'>
+        <Title text1={'FREQUENTLY ASKED'} text2={'QUESTIONS'} large />
       </div>
+      <p className='text-center text-sm text-gray-500 mb-10'>Quick answers about delivery, returns, payments and more.</p>
 
-      <div>
+      <div className='flex flex-col gap-3'>
         {faqs.map((faq, i) => (
           <FAQItem
             key={i}

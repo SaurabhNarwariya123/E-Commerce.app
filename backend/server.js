@@ -13,26 +13,17 @@ import userRouter from './routes/userRoute.js';
 import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
-import aiChatRouter from './routes/aiChat.routes.js';
 import stockRouter from './routes/stockRoute.js';
 import deliveryRouter from './routes/deliveryRoute.js';
 import offerRouter from './routes/offerRoute.js';
 import couponRouter from './routes/couponRoute.js';
-import { validateAIConfig } from './config/ai.js';
+import chatRouter from './routes/chatRoute.js';
 
 // App config
 const app = express()
 const port = process.env.PORT || 4000
 connectCloudinary()
 connectDB();
-
-// Initialize AI Config
-// try {
-//     validateAIConfig();
-//     console.log('AI Chatbot configured successfully');
-// } catch (error) {
-//     console.warn('AI Chatbot not configured:', error.message);
-// }
 
 // Middlewares
 app.use(express.json())
@@ -117,12 +108,11 @@ app.use('/api/user',     userRouter)
 app.use('/api/product',  productRouter)
 app.use('/api/cart',     cartRouter)
 app.use('/api/order',    orderRouter)
-app.use('/api/ai',       aiChatRouter)
 app.use('/api/stock',    stockRouter)
 app.use('/api/delivery', deliveryRouter)
 app.use('/api/offer',    offerRouter)
 app.use('/api/coupon',   couponRouter)
-
+app.use('/api/chat',     chatRouter)
 app.get('/', (_req, res) => {
     res.send("API Working")
 })

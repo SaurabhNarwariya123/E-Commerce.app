@@ -103,50 +103,55 @@ const Collection = () => {
 
 
            {/* category Filter */}
-           <div className={`border border-beige rounded-xl pl-5 py-4 mt-6 ${ showFilter ? '' : 'hidden'} sm:block`}>
-            <p className='mb-3 text-sm font-medium text-charcoal tracking-wide'>CATEGORIES</p>
-             <div className='flex flex-col gap-2.5 text-sm font-light text-gray-600'>
+           <div className={`bg-white border border-beige rounded-2xl shadow-sm overflow-hidden mt-6 ${ showFilter ? '' : 'hidden'} sm:block`}>
+            <p className='px-5 py-2.5 mb-4 text-xs font-semibold text-white tracking-[0.2em] bg-linear-to-r from-gold-dark to-gold'>CATEGORIES</p>
+            <div className='px-5 pb-5'>
+             <div className='flex flex-col gap-2.5 text-sm text-gray-600'>
 
-                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                <label className='flex items-center gap-2.5 cursor-pointer w-full rounded-lg px-2 py-1 -mx-2 hover:bg-beige-light hover:text-charcoal transition-colors'>
                   <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Men'} onChange={toggleCategory}/> Men
                 </label>
 
-                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                <label className='flex items-center gap-2.5 cursor-pointer w-full rounded-lg px-2 py-1 -mx-2 hover:bg-beige-light hover:text-charcoal transition-colors'>
                   <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Women'} onChange={toggleCategory} /> Women
                 </label>
 
-                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                <label className='flex items-center gap-2.5 cursor-pointer w-full rounded-lg px-2 py-1 -mx-2 hover:bg-beige-light hover:text-charcoal transition-colors'>
                   <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Kids'} onChange={toggleCategory} /> Kids
                 </label>
 
 
              </div>
+            </div>
            </div>
            {/* SubCategory Filter */}
 
-           <div className={`border border-beige rounded-xl pl-5 py-4 mt-5 ${ showFilter ? '' : 'hidden'} sm:block`}>
-            <p className='mb-3 text-sm font-medium text-charcoal tracking-wide'>TYPE</p>
+           <div className={`bg-white border border-beige rounded-2xl shadow-sm overflow-hidden mt-5 ${ showFilter ? '' : 'hidden'} sm:block`}>
+            <p className='px-5 py-2.5 mb-4 text-xs font-semibold text-white tracking-[0.2em] bg-linear-to-r from-gold-dark to-gold'>TYPE</p>
+            <div className='px-5 pb-5'>
              <div className='flex flex-col gap-2.5 text-sm font-light text-gray-600'>
-                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                <label className='flex items-center gap-2.5 cursor-pointer w-full rounded-lg px-2 py-1 -mx-2 hover:bg-beige-light hover:text-charcoal transition-colors'>
                   <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Topwear'} onChange={toggleSubCategory} /> Topwear
                 </label>
 
-                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                <label className='flex items-center gap-2.5 cursor-pointer w-full rounded-lg px-2 py-1 -mx-2 hover:bg-beige-light hover:text-charcoal transition-colors'>
                   <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Bottomwear'} onChange={toggleSubCategory}/> Bottomwear
                 </label>
 
-                <label className='flex items-center gap-2 cursor-pointer w-fit'>
+                <label className='flex items-center gap-2.5 cursor-pointer w-full rounded-lg px-2 py-1 -mx-2 hover:bg-beige-light hover:text-charcoal transition-colors'>
                   <input  className = 'accent-gold w-3.5 h-3.5' type="checkbox" value={'Winterwear'}  onChange={toggleSubCategory}/> Winterwear
                 </label>
 
 
              </div>
+            </div>
            </div>
 
            {/* Price Range Filter */}
 
-           <div className={`border border-beige rounded-xl pl-5 pr-4 py-4 mt-5 ${ showFilter ? '' : 'hidden'} sm:block`}>
-            <p className='mb-3 text-sm font-medium text-charcoal tracking-wide'>PRICE</p>
+           <div className={`bg-white border border-beige rounded-2xl shadow-sm overflow-hidden mt-5 ${ showFilter ? '' : 'hidden'} sm:block`}>
+            <p className='px-5 py-2.5 mb-4 text-xs font-semibold text-white tracking-[0.2em] bg-linear-to-r from-gold-dark to-gold'>PRICE</p>
+            <div className='px-5 pr-4 pb-5'>
             <input
               type='range'
               min='0'
@@ -157,14 +162,15 @@ const Collection = () => {
             />
             <div className='flex items-center justify-between text-xs text-gray-500 mt-1'>
               <span>{currency}0</span>
-              <span className='text-charcoal font-medium'>Up to {currency}{maxPrice}</span>
+              <span className='text-gold-dark font-semibold'>Up to {currency}{maxPrice}</span>
+            </div>
             </div>
            </div>
         </div>
 
         {/* Right Side */}
 
-         <div className='flex-1'>
+         <div className='flex-1 bg-beige-light/50 rounded-3xl p-4 sm:p-6'>
 
           <div className='flex justify-between items-center mb-6' >
 
@@ -172,7 +178,7 @@ const Collection = () => {
 
            {/* Product Sort */}
 
-            <select  onChange = {(e) => setSortType(e.target.value)} className='border border-beige rounded-full text-sm px-4 py-2 text-gray-600 focus:outline-none focus:border-gold transition-colors'>
+            <select  onChange = {(e) => setSortType(e.target.value)} className='bg-white border border-gold/40 shadow-sm rounded-full text-sm px-4 py-2 text-gold-dark font-medium cursor-pointer hover:border-gold focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all'>
               <option value="relavent">Sort by: Relevant</option>
               <option value="low-high">Sort by: Low to High</option>
               <option value="high-low">Sort by: High to Low</option>

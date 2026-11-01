@@ -1,15 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-/**
- * Authentication Middleware
- * Verifies JWT token from Authorization header
- * 
- * Expected header format:
- * Authorization: Bearer <token>
- * 
- * Or custom header (for backward compatibility):
- * token: <token>
- */ 
 const authUser = async (req, res, next) => {
     try {
         // Get token: cookie first, then Authorization header, then custom header

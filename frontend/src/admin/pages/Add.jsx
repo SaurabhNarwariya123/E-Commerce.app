@@ -89,37 +89,37 @@ const Add = ({token}) => {
     }
 
 
-  const labelClass = 'text-sm font-medium text-gray-700 mb-1.5 block'
-  const inputClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition'
+  const labelClass = 'text-sm font-medium text-[var(--adm-ink)] mb-1.5 block'
+  const inputClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition'
 
   return (
     <div className='bg-white border border-gray-200 rounded-2xl p-6'>
-      <h2 className='text-xl font-semibold text-gray-800 mb-5'>Add Product</h2>
+      <h1 className='text-xl font-semibold text-[var(--adm-ink)] mb-5'>Add Product</h1>
       <form onSubmit={onSubmitHandler} className='flex flex-col w-full items-start gap-4' action="">
          <div>
             <p className={labelClass}>Upload Image</p>
 
             <div className='flex gap-3'>
               <label htmlFor="image1">
-                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-green-400 transition overflow-hidden'>
+                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-emerald-400 transition overflow-hidden'>
                   <img className='w-full h-full object-cover cursor-pointer' src={ !image1 ? assets.upload_area : URL.createObjectURL(image1)} alt="" />
                 </div>
                 <input onChange={(e)=>setImage1(e.target.files[0])} type="file" id='image1' hidden />
              </label>
               <label htmlFor="image2">
-                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-green-400 transition overflow-hidden'>
+                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-emerald-400 transition overflow-hidden'>
                   <img className='w-full h-full object-cover cursor-pointer' src={!image2 ? assets.upload_area : URL.createObjectURL(image2)} alt="" />
                 </div>
                 <input onChange={(e)=>setImage2(e.target.files[0])} type="file" id='image2' hidden />
               </label>
               <label htmlFor="image3">
-                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-green-400 transition overflow-hidden'>
+                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-emerald-400 transition overflow-hidden'>
                   <img className='w-full h-full object-cover cursor-pointer' src={!image3 ? assets.upload_area : URL.createObjectURL(image3)} alt="" />
                 </div>
                 <input onChange={(e)=>setImage3(e.target.files[0])}  type="file" id='image3' hidden />
               </label>
               <label htmlFor="image4">
-                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-green-400 transition overflow-hidden'>
+                <div className='w-20 h-20 rounded-lg border border-dashed border-gray-300 hover:border-emerald-400 transition overflow-hidden'>
                   <img className='w-full h-full object-cover cursor-pointer' src={!image4 ? assets.upload_area : URL.createObjectURL(image4)} alt="" />
                 </div>
                 <input onChange={(e)=>setImage4(e.target.files[0])} type="file" id='image4' hidden />
@@ -179,7 +179,7 @@ const Add = ({token}) => {
           <div className='w-full'>
              <p className={labelClass}>Colors (optional)</p>
              <div className='flex flex-wrap items-center gap-2 mb-2'>
-                <input onChange={(e)=>setColorName(e.target.value)} value={colorName} className='border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition' type="text" placeholder='Color name e.g. Charcoal' />
+                <input onChange={(e)=>setColorName(e.target.value)} value={colorName} className='border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition' type="text" placeholder='Color name e.g. Charcoal' />
                 <input onChange={(e)=>setColorHex(e.target.value)} value={colorHex} className='w-9 h-9 p-0 border border-gray-300 rounded-lg cursor-pointer' type="color" />
                 <button type='button' onClick={addColor} className='px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer'>Add Color</button>
              </div>
@@ -203,7 +203,7 @@ const Add = ({token}) => {
                     type='button'
                     key={size}
                     onClick={()=>setSizes(prev =>prev.includes(size) ? prev.filter(item =>item !== size) : [...prev,size])}
-                    className={`w-10 h-10 rounded-lg text-sm font-medium cursor-pointer transition ${sizes.includes(size) ? "bg-green-700 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                    className={`w-10 h-10 rounded-lg text-sm font-medium cursor-pointer transition ${sizes.includes(size) ? "bg-emerald-600 text-white" : "bg-gray-100 text-[var(--adm-muted)] hover:bg-gray-200"}`}
                   >
                     {size}
                   </button>
@@ -211,10 +211,10 @@ const Add = ({token}) => {
               </div>
           </div>
           <label className='flex items-center gap-2 mt-2 cursor-pointer w-fit'>
-            <input onChange={() => setBestseller(prev => !prev)} checked = {bestseller} type="checkbox" className='w-4 h-4 accent-green-700' />
-            <span className='text-sm text-gray-700'>Add to bestseller</span>
+            <input onChange={() => setBestseller(prev => !prev)} checked = {bestseller} type="checkbox" className='w-4 h-4 accent-emerald-600' />
+            <span className='text-sm text-[var(--adm-ink)]'>Add to bestseller</span>
           </label>
-          <button type='submit' className='px-6 py-2.5 mt-2 bg-green-700 hover:bg-green-800 text-white text-sm font-medium rounded-full cursor-pointer transition'>Add Product</button>
+          <button type='submit' className='px-6 py-2.5 mt-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-full cursor-pointer transition'>Add Product</button>
       </form>
     </div>
 
