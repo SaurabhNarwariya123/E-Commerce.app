@@ -81,10 +81,33 @@ describe('POLICY_QA', () => {
         llm.classify.mockResolvedValue({ intent: 'POLICY_QA' })
         retrieve.mockRejectedValue(new Error('embedding quota exceeded: secret-detail'))
 
-        const r = await ask(chatGraph, 'return window?')
+        const r = await ask(chatGraph, 'tell me about zebra unicorn rules')
 
         expect(r.answer).toMatch(/couldn't search the store documents/)
         expect(r.answer).not.toMatch(/secret-detail/)
+    })
+
+    test('embeddings down: policy questions are answered from the local policy text', async () => {
+        llm.classify.mockResolvedValue({ intent: 'POLICY_QA' })
+        retrieve.mockRejectedValue(new Error('429 embedding quota exceeded'))
+
+        const r = await ask(chatGraph, 'what is the return policy?')
+
+        expect(r.answer).toMatch(/7-day/)
+        expect(r.sources).toEqual(['Store policies'])
+        expect(llm.calls.answer).toBe(0)
+    })
+
+    test('Gemini fully down: classifier and embeddings both fail, policy still answered', async () => {
+        llm.classify.mockRejectedValue(new Error('429 quota'))
+        retrieve.mockRejectedValue(new Error('429 quota'))
+
+        const r1 = await ask(chatGraph, 'what is the return policy?')
+        expect(r1.answer).toMatch(/7-day/)
+        const r2 = await ask(chatGraph, 'refund kitne din mein milta hai?')
+        expect(r2.answer).toMatch(/5-7 business days/)
+        const r3 = await ask(chatGraph, 'do you offer gift wrapping?')
+        expect(r3.answer).toMatch(/gift-wrapped/)
     })
 })
 

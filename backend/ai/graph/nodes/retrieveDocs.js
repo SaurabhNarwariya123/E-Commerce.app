@@ -2,6 +2,7 @@ import productModel from '../../../models/productModel.js'
 import { RAG_INTENTS } from '../../intents.js'
 import { retrieve } from '../../rag/retriever.js'
 import { withTimeout } from '../../timeout.js'
+import { lexicalPolicyAnswer } from '../../rag/lexicalSearch.js'
 
 const CURRENCY = process.env.CURRENCY_SYMBOL || '$'
 const retrieveTimeoutMs = () => Number(process.env.AI_TOOL_TIMEOUT_MS) || 10000
@@ -42,6 +43,11 @@ export const retrieveDocs = async (state) => {
         docs = await withTimeout(retrieve(state.cleanedMessage, { type }), retrieveTimeoutMs(), 'search timed out')
     } catch (err) {
         console.error(`[chat ${state.requestId}] ${type} search failed:`, err.message)
+        // Embeddings unavailable: policy text is local, so answer from it by word match instead of failing.
+        if (!isProduct) {
+            const offline = lexicalPolicyAnswer(state.cleanedMessage)
+            if (offline) return { answer: offline, answerSource: 'fallback', executedTool: 'rag', sourceLabel: 'Store policies' }
+        }
         return { answer: "I couldn't search the store documents right now. Please try again in a moment.", answerSource: 'fixed' }
     }
 
